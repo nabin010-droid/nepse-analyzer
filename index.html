@@ -1,0 +1,120 @@
+<!doctype html><html lang="ne"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>NEPSE Analyzer</title><meta name="color-scheme" content="light dark">
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f4f4f1;--bd:#d9d9d4;--g:#0a7d3b;--r:#c62828;--y:#b26a00;--ac:#1d4ed8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171a;--fg:#ececec;--mut:#9aa0a6;--card:#1f2226;--bd:#33373d;--g:#4cd17f;--r:#ff6b6b;--y:#ffb84d;--ac:#7aa2ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171a;--fg:#ececec;--mut:#9aa0a6;--card:#1f2226;--bd:#33373d;--g:#4cd17f;--r:#ff6b6b;--y:#ffb84d;--ac:#7aa2ff;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:20px 0 8px}
+.mut{color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:10px 0}
+.warn{border-color:var(--y)}
+label{display:block;font-size:13px;margin:8px 0 2px;color:var(--mut)}
+textarea,input[type=file]{width:100%;box-sizing:border-box;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:8px;font:inherit}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer;margin:8px 8px 0 0}
+button.s{background:transparent;color:var(--fg);border:1px solid var(--bd)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
+tr.row{cursor:pointer}tr.row:hover{background:var(--card)}
+.b{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid currentColor}
+.g{color:var(--g)}.r{color:var(--r)}.y{color:var(--y)}
+li{margin:4px 0}ul{padding-left:18px}
+svg{width:100%;height:auto;display:block}
+</style></head><body><main>
+<h1>NEPSE Analyzer</h1>
+<div class="mut">Share ko technical + fundamental + news analysis, reason sahit. Forecast ek statistical anuman matra ho.</div>
+<div class="card warn mut" id="mode">DEMO DATA: tala ko stock haru kalpanik (BANK-A jasta) ho, asli NEPSE data haina. Asli data halna tala CSV upload garnus.</div>
+
+<h2>Bazaar adhyayan (online khojera, 9 Nov 2026)</h2>
+<div class="card"><div class="mut">Source: nepalstock.com, Kathmandu Post, OnlineKhabar, ShareSansar, HamroShare, ChartNepali, NepseTrading. Yo asli data ho; tala ko stock table chai abhi demo ho.</div>
+<b>Index ko sthiti</b><ul>
+<li>NEPSE 6 Nov ma 2,655.22 (+0.09%), turnover Rs 3.46 arba. 5 Nov ma 2,652.58 (-0.49%).</li>
+<li>52-hapta range 2,513 - 2,960: index high bata lagbhag 10% talo, low bata 5.6% mathi chha.</li>
+<li>Oct 26-30 hapta: +2.13% (2,690.15), turnover 53% badhera Rs 34.39 arba, hydropower sub-index +3.78% (Kathmandu Post).</li>
+<li>Index 20 ra 50-din EMA (~2,621-2,627) mathi chha; RSI 60 (neutral); 6 Nov ma 158 badhe, 107 ghatye.</li></ul>
+<b>Mero vishleshan (rule-adharit, bhavishyabani haina)</b><ul>
+<li class="y">Chhoto samay ko dishaa: sideways dekhi halka positive. Support ~2,629; tyo bhatkiyo vane 52-hapta low 2,513 samma jokhim. 2,690 mathi tikera close bhayo vane upar ko bato khulchha.</li>
+<li class="r">Jokhim: Kathmandu Post le bhaneko chha, bhaw badhnu company ko kamai sudhar nabhayera bazaar ma tarlata ra karja-lagani badheko le pani huna sakchha.</li>
+<li class="y">Hydropower: turnover ko 45.2% (HamroShare), rally ko neta. Tara chito badhne-ghatne, profit-booking ko jokhim dherai.</li>
+<li class="y">Q1 FY 2083/84 natija aaudai chhan (6 Nov): Mero Microfinance Rs 86.62m, Nirdhan Utthan Rs 115.46m, Mid Solu Hydropower Rs 57.48m, SuryaJyoti Life Rs 102.95m, Asian Hydropower Rs 33.87m, Sagarmatha Jalbidhyut Rs 15.70m, Infinity Laghubitta Rs 24.55m. Gata barsa sanga tulana bina ramro/naramro bhanna mildaina.</li>
+<li class="g">NRB: policy rate 4.50%, SDF 2.75%, bank rate 6% unchanged (Jul 2026 ko monetary policy anusar, tyaspachhi parivartan ko khabar paaeko chhaina). Sasto paisa jaari rahanu bazaar ko lagi sahayogi tatwa ho.</li></ul>
+<b>6 Nov ka mukhya chal (signal, sifaris haina)</b>
+<div class="tw"><table><tr><th>Stock</th><th>Dekhieko</th><th>Mero padhai</th></tr>
+<tr><td>BENH</td><td>28 Oct Rs 536.70 bata 6 Nov Rs 840 (+56%)</td><td class="r">Dherai chadhisakeko, chase nagarnu</td></tr>
+<tr><td>CREST</td><td>+14.08% (Rs 1,192), turnover ~Rs 2 crore matra</td><td class="r">Kam turnover ma ucchal, sabdhan</td></tr>
+<tr><td>GCIL</td><td>-6.4% (Rs 380), turnover Rs 21.6 crore (sabai bhanda dherai)</td><td class="r">Dherai bechne dabab, sthir nabhaisamma nakinnu</td></tr>
+<tr><td>RBCL</td><td>+3.42% (Rs 14,200), kam volume</td><td class="y">Herera basne</td></tr></table></div>
+<div class="mut">Pratyek stock ko 1 barsa ko price history ra fundamental online search bata sabai nikalna sakiyena. Tesaile tala ko score/forecast ko lagi data.json (script bata) chahinchha. Yo financial salaha haina.</div></div>
+
+<h2>1. Data haalnus</h2>
+<div class="card">
+<label>Price CSV (columns: symbol,date,close,volume) - ShareSansar/Merolagani/NEPSE bata export</label>
+<input type="file" id="fp" accept=".csv">
+<label>Fundamentals CSV (columns: symbol,sector,eps,pe,pbv,roe,div) - optional</label>
+<input type="file" id="ff" accept=".csv">
+<label>News (ek line ma ek: SYMBOL | headline)</label>
+<textarea id="nw" rows="4"></textarea>
+<button id="go">Analyze garnus</button><button class="s" id="dm">Demo data feri</button>
+</div>
+
+<h2>2. Ranking</h2>
+<div class="card tw"><table><thead><tr><th>Stock</th><th>Sector</th><th>Score</th><th>Verdict</th><th>10 din forecast</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="mut">Row ma click garera pura reason ra chart herne.</div>
+<h2>3. Compare</h2><div class="card"><select id="ca"></select> <select id="cb"></select><button id="cc">Compare garnus</button><div class="tw" id="co"></div></div>
+<div id="dt"></div>
+
+<div class="card mut">Yo tool financial salaha haina. Score niyam-adharit ganana ho, bhavishyabani haina; share bazaar ma pesa ghatna sakchha. Kinna agadi SEBON/NEPSE ko official data, company ko report ra licensed broker/advisor sanga janch garnus.</div>
+
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let P={},F={},R=[];
+function rng(s){return()=>(s=(s*1664525+1013904223)%4294967296)/4294967296}
+function demo(){P={};F={};
+[["BANK-A","Banking",.0015,.014,14,1.8,14,7],["HYDRO-B","Hydropower",-.0012,.022,38,3.9,6,1],["INS-C","Insurance",.0004,.018,22,2.6,11,4],["FIN-D","Finance",-.0006,.02,30,2.9,8,2],["TELE-E","Telecom",.0009,.011,18,3.1,22,8],["MFG-F","Manufacturing",.002,.025,26,4.2,12,0]].forEach(([s,sec,d,v,pe,pb,roe,dv],i)=>{const r=rng(i*977+13);let p=300+i*90;P[s]=[];for(let k=0;k<120;k++){p*=Math.exp(d+v*(r()-.5)*2);P[s].push({c:+p.toFixed(1),v:Math.round(20000*(1+r()+(k>100?(d>0?.6:.4):0)))})}F[s]={sector:sec,pe,pbv:pb,roe,div:dv}});
+$("#nw").value="BANK-A | record profit and bonus share approved\nHYDRO-B | loss reported, penalty from regulator\nFIN-D | merger delay, decline in deposits";
+$("#mode").style.display="block";run()}
+function csv(t){const L=t.trim().split(/\r?\n/).map(l=>l.split(",").map(x=>x.trim()));const h=L.shift().map(x=>x.toLowerCase());return L.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
+const rd=f=>new Promise(ok=>{const r=new FileReader();r.onload=()=>ok(r.result);r.readAsText(f)});
+async function load(){const a=$("#fp").files[0],b=$("#ff").files[0];
+if(a){P={};csv(await rd(a)).forEach(x=>{const s=(x.symbol||"").toUpperCase();if(!s||isNaN(+x.close))return;(P[s]=P[s]||[]).push({c:+x.close,v:+x.volume||0,d:x.date})});$("#mode").style.display="none"}
+if(b){F={};csv(await rd(b)).forEach(x=>{F[(x.symbol||"").toUpperCase()]={sector:x.sector||"-",pe:+x.pe,pbv:+x.pbv,roe:+x.roe,div:+x.div}})}
+run()}
+const avg=a=>a.reduce((x,y)=>x+y,0)/(a.length||1);
+function rsi(c){let g=0,l=0;for(let i=c.length-14;i<c.length;i++){const d=c[i]-c[i-1];d>0?g+=d:l-=d}return l===0?100:100-100/(1+g/l)}
+function fcast(c){const n=30,y=c.slice(-n).map(Math.log),mx=(n-1)/2,my=avg(y);let sxy=0,sxx=0;y.forEach((v,i)=>{sxy+=(i-mx)*(v-my);sxx+=(i-mx)**2});const b=sxy/sxx;
+const rt=[];for(let i=1;i<c.length;i++)rt.push(Math.log(c[i]/c[i-1]));const m=avg(rt.slice(-30)),sd=Math.sqrt(avg(rt.slice(-30).map(x=>(x-m)**2)));
+const L=c[c.length-1],mid=[],up=[],lo=[];for(let j=1;j<=10;j++){mid.push(L*Math.exp(b*j));up.push(L*Math.exp(b*j+1.5*sd*Math.sqrt(j)));lo.push(L*Math.exp(b*j-1.5*sd*Math.sqrt(j)))}
+return{mid,up,lo,pct:(Math.exp(b*10)-1)*100,sd}}
+const POS=["profit","bonus","dividend","growth","record","approve","increase","upgrade","gain","नाफा","लाभांश","बोनस"],NEG=["loss","penalty","fraud","decline","ban","delay","fall","down","default","घाटा","जरिवाना"];
+function analyze(s){const q=P[s];if(!q||q.length<55)return null;const c=q.map(x=>x.c),v=q.map(x=>x.v),L=c[c.length-1],s20=avg(c.slice(-20)),s50=avg(c.slice(-50)),r=rsi(c),mom=(L/c[c.length-21]-1)*100,vr=avg(v.slice(-10))/(avg(v.slice(-30,-10))||1),fc=fcast(c);const I=[];
+const add=(p,m,t,k)=>I.push({p,m,t,k});
+if(L>s20&&s20>s50)add(10,10,"Trend uptrend: price 20-din ra 50-din average duita bhanda mathi (L "+L.toFixed(0)+").","g");else if(L<s20&&s20<s50)add(0,10,"Trend downtrend: price duita moving average bhanda talo.","r");else add(5,10,"Trend mixed: spasta dishaa chhaina.","y");
+if(r<30)add(8,8,"RSI "+r.toFixed(0)+": oversold, bounce ko sambhavana tara girawat chalirahna pani sakchha.","y");else if(r>70)add(2,8,"RSI "+r.toFixed(0)+": overbought, thulo badhai pachhi correction ko jokhim.","r");else add(6,8,"RSI "+r.toFixed(0)+": santulit.","g");
+add(mom>5?8:mom>0?5:mom>-5?3:0,8,"20-din momentum "+mom.toFixed(1)+"%.",mom>0?"g":"r");
+add(vr>1.2&&mom>0?4:vr>1.2?0:2,4,vr>1.2?(mom>0?"Volume badhdai, badhdo price sanga: majboot sanket.":"Volume badhdai tara price ghatdai: becheko dabab."):"Volume samanya.",vr>1.2?(mom>0?"g":"r"):"y");
+add(fc.pct>3?8:fc.pct>0?5:fc.pct>-3?3:0,8,"Trend forecast: 10 din ma "+fc.pct.toFixed(1)+"% (statistical anuman).",fc.pct>0?"g":"r");
+const f=F[s];if(f){if(f.pe>0)add(f.pe<=15?10:f.pe<=25?6:2,10,"P/E "+f.pe+(f.pe<=15?": sasto valuation.":f.pe<=25?": thik-thak.":": mahango."),f.pe<=15?"g":f.pe<=25?"y":"r");
+if(f.pbv>0)add(f.pbv<=2?8:f.pbv<=3.5?5:1,8,"P/B "+f.pbv+(f.pbv<=2?": book value ko najik.":f.pbv<=3.5?": madhyam.":": book value bhanda dherai mahango."),f.pbv<=2?"g":f.pbv<=3.5?"y":"r");
+if(f.roe>=0)add(f.roe>=15?8:f.roe>=10?5:1,8,"ROE "+f.roe+"%"+(f.roe>=15?": kamai ramro.":f.roe>=10?": thik.":": kamjor kamai."),f.roe>=15?"g":f.roe>=10?"y":"r");
+if(f.div>=0)add(f.div>=6?6:f.div>=3?4:1,6,"Dividend "+f.div+"%"+(f.div>=6?": ramro.":f.div>=3?": madhyam.":": kam/chhaina."),f.div>=6?"g":f.div>=3?"y":"r")}
+const nl=$("#nw").value.split("\n").filter(l=>l.split("|")[0].trim().toUpperCase()===s);if(nl.length){let n=0;nl.forEach(l=>{const t=l.toLowerCase();POS.forEach(w=>{if(t.includes(w))n++});NEG.forEach(w=>{if(t.includes(w))n--})});add(Math.max(0,Math.min(10,5+n*2)),10,"News ("+nl.length+"): "+nl.map(l=>l.split("|").slice(1).join("|").trim()).join("; "),n>0?"g":n<0?"r":"y")}
+const sc=Math.round(100*I.reduce((a,i)=>a+i.p,0)/I.reduce((a,i)=>a+i.m,0));
+return{s,sc,I,fc,c,sec:f?f.sector:"-",vd:sc>=65?["Kinna ramro (Buy)","g"]:sc>=45?["Hold / herera basne","y"]:["Nakinna (Avoid)","r"]}}
+function run(){R=Object.keys(P).map(analyze).filter(Boolean).sort((a,b)=>b.sc-a.sc);
+$("#tb").innerHTML=R.map(a=>`<tr class="row" data-s="${esc(a.s)}"><td><b>${esc(a.s)}</b></td><td>${esc(a.sec)}</td><td>${a.sc}/100</td><td><span class="b ${a.vd[1]}">${a.vd[0]}</span></td><td class="${a.fc.pct>=0?"g":"r"}">${a.fc.pct.toFixed(1)}%</td></tr>`).join("")||'<tr><td colspan="5">Kunai stock ma 55+ din ko data chaidaina. CSV jaanch garnus.</td></tr>';
+$("#dt").innerHTML="";document.querySelectorAll(".row").forEach(e=>e.onclick=()=>show(e.dataset.s));const o=R.map(a=>`<option>${esc(a.s)}</option>`).join("");$("#ca").innerHTML=o;$("#cb").innerHTML=o;if(R[1])$("#cb").selectedIndex=1}
+function chart(a){const n=60,h=a.c.slice(-n),f=a.fc,all=h.concat(f.up,f.lo),mn=Math.min(...all),mx=Math.max(...all),W=600,H=220,T=n+10,X=i=>5+i*(W-10)/(T-1),Y=v=>H-10-(v-mn)/(mx-mn||1)*(H-20);
+const pt=(arr,o)=>arr.map((v,i)=>X(o+i).toFixed(1)+","+Y(v).toFixed(1));const e=h[n-1];
+const ln=pt(h,0).join(" "),m=pt([e].concat(f.mid),n-1).join(" "),band=pt([e].concat(f.up),n-1).concat(pt([e].concat(f.lo),n-1).reverse()).join(" ");
+return`<svg viewBox="0 0 ${W} ${H}"><polygon points="${band}" fill="var(--ac)" opacity=".18"/><polyline points="${ln}" fill="none" stroke="var(--fg)" stroke-width="2"/><polyline points="${m}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-dasharray="5 4"/><text x="8" y="14" fill="var(--mut)" font-size="12">${mn.toFixed(0)} - ${mx.toFixed(0)}</text></svg>`}
+function show(s){const a=R.find(x=>x.s===s);$("#dt").innerHTML=`<h2>${esc(s)}: <span class="${a.vd[1]}">${a.vd[0]}</span> (${a.sc}/100)</h2><div class="card">${chart(a)}<div class="mut">Kalo: pachhillo 60 din. Neelo dashed + chhaya: 10 din ko forecast range.</div></div>${stat(a)}${prof(a)}<div class="card"><b>Reasons</b><ul>${a.I.map(i=>`<li class="${i.k}">${esc(i.t)} <span class="mut">(${i.p}/${i.m})</span></li>`).join("")}</ul></div>`;pf();$("#dt").scrollIntoView({behavior:"smooth"})}
+function stat(a){const c=a.c.slice(-250),L=c[c.length-1],hi=Math.max(...c),lo=Math.min(...c);let pk=c[0],dd=0;c.forEach(v=>{pk=Math.max(pk,v);dd=Math.min(dd,v/pk-1)});const rt=[];for(let i=1;i<c.length;i++)rt.push(Math.log(c[i]/c[i-1]));const m=avg(rt),vol=Math.sqrt(avg(rt.map(x=>(x-m)**2))*250)*100;
+return`<div class="card"><b>Pachhillo ${c.length} din (max 1 barsa) ko vishleshan</b><ul><li>Return: ${((L/c[0]-1)*100).toFixed(1)}%</li><li>High/Low: ${hi.toFixed(0)} / ${lo.toFixed(0)} (high bata ${((L/hi-1)*100).toFixed(1)}%)</li><li>Volatility (barsik): ${vol.toFixed(0)}%</li><li>Sabai bhanda thulo girawat: ${(dd*100).toFixed(1)}%</li></ul></div>`}
+function prof(a){const L=a.c[a.c.length-1],f=a.fc;return`<div class="card"><b>Profit/loss anuman (10 din)</b><br>Lagani Rs. <input type="number" id="am" value="100000" style="width:130px;display:inline-block" oninput="pf()"><div id="pr" data-m="${f.mid[9]/L}" data-u="${f.up[9]/L}" data-l="${f.lo[9]/L}"></div><div class="mut">Range lagbhag 87% sambhavna ko ho, bahira jana sakchha. Brokerage, SEBON fee ra capital gain tax joDieko chhaina.</div></div>`}
+function pf(){const e=$("#pr"),x=+$("#am").value||0,t=k=>{const v=x*(+e.dataset[k]-1);return(v>=0?"+":"")+Math.round(v).toLocaleString("en-IN")};e.innerHTML=`Madhya: <b>Rs. ${t("m")}</b> | Sabai bhanda ramro: Rs. ${t("u")} | Sabai bhanda naramro: Rs. ${t("l")}`}
+$("#cc").onclick=()=>{const A=R.find(x=>x.s===$("#ca").value),B=R.find(x=>x.s===$("#cb").value);if(!A||!B)return;const row=(n,f)=>`<tr><td>${n}</td><td>${f(A)}</td><td>${f(B)}</td></tr>`,ret=a=>{const c=a.c.slice(-250);return((c[c.length-1]/c[0]-1)*100).toFixed(1)+"%"},fd=(a,k)=>F[a.s]&&F[a.s][k]!=null?F[a.s][k]:"-",W=A.sc>=B.sc?A:B;
+$("#co").innerHTML=`<table><tr><th></th><th>${esc(A.s)}</th><th>${esc(B.s)}</th></tr>`+row("Score",a=>a.sc+"/100")+row("Verdict",a=>a.vd[0])+row("Barsa return",ret)+row("10 din forecast",a=>a.fc.pct.toFixed(1)+"%")+row("P/E",a=>fd(a,"pe"))+row("P/B",a=>fd(a,"pbv"))+row("ROE",a=>fd(a,"roe"))+row("Dividend",a=>fd(a,"div"))+`</table><p><b>${esc(W.s)}</b> ko score badhi chha. Mukhya karan: ${W.I.filter(i=>i.k==="g").slice(0,2).map(i=>esc(i.t)).join(" ")}</p>`};
+$("#go").onclick=load;$("#dm").onclick=demo;demo();
+fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{P=j.prices;F=j.fund||{};$("#nw").value=(j.news||[]).map(n=>n.symbol+" | "+n.title).join("\n");$("#mode").textContent="Live data, antim update: "+j.updated;$("#mode").style.display="block";run()}).catch(()=>{});
+</script></main></body></html>
