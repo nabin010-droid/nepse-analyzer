@@ -30,6 +30,15 @@ files = [f["name"] for f in requests.get(LIST, headers=H, timeout=60).json() if 
 with ThreadPoolExecutor(8) as ex:
     P = {s: rows for s, rows in ex.map(one, files) if len(rows) >= 55}
 
+IDX = []  # NEPSE index history for relative-strength comparison
+try:
+    t = pd.read_csv(io.StringIO(requests.get(RAW.replace("stock/adjusted/", "index/adjusted/") + "NEPSE_adjusted.csv", headers=H, timeout=60).text))
+    t.columns = [c.strip().lower() for c in t.columns]
+    dc = next(c for c in t.columns if c in ("time", "date"))
+    IDX = [{"d": str(r[dc])[:10], "c": float(r["close"])} for _, r in t.dropna(subset=["close"]).tail(KEEP).iterrows()]
+except Exception as e:
+    print("index skip", e)
+
 FEEDS = ["https://english.onlinekhabar.com/feed"]  # add more RSS you trust
 def news(symbols):
     out = []
@@ -45,6 +54,6 @@ if os.path.exists("fund.csv"):  # symbol,sector,eps,pe,pbv,roe,div - you maintai
     for r in pd.read_csv("fund.csv").itertuples():
         F[str(r.symbol).upper()] = {"sector": r.sector, "pe": r.pe, "pbv": r.pbv, "roe": r.roe, "div": r.div}
 
-json.dump({"updated": datetime.datetime.now().isoformat(timespec="minutes"), "prices": P, "fund": F,
+json.dump({"updated": datetime.datetime.now().isoformat(timespec="minutes"), "prices": P, "fund": F, "index": IDX,
            "news": news(list(P))}, open("data.json", "w"))
 print("stocks:", len(P))
