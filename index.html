@@ -19,6 +19,7 @@ th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-sp
 tr.row{cursor:pointer}tr.row:hover{background:var(--card)}
 .b{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid currentColor}
 .g{color:var(--g)}.r{color:var(--r)}.y{color:var(--y)}
+.rs td{white-space:normal;font-size:13px;line-height:1.5}.rs p{margin:3px 0}
 li{margin:4px 0}ul{padding-left:18px}
 svg{width:100%;height:auto;display:block}
 </style></head><body><main>
@@ -58,9 +59,10 @@ svg{width:100%;height:auto;display:block}
 <button id="go">Analyze garnus</button><button class="s" id="dm">Demo data feri</button>
 </div>
 
-<h2>2. Ranking</h2>
-<div class="card tw"><table><thead><tr><th>Stock</th><th>Sector</th><th>Score</th><th>Verdict</th><th>10 din forecast</th></tr></thead><tbody id="tb"></tbody></table></div>
-<div class="mut">Row ma click garera pura reason ra chart herne.</div>
+<h2>2. Ranking, Entry ra Exit</h2>
+<input id="q" placeholder="Stock khojnus (jastai NABIL)" oninput="draw()" style="width:100%;box-sizing:border-box;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:8px;font:inherit">
+<div class="card tw"><table><thead><tr><th>Stock</th><th>Score</th><th>Verdict</th><th>15 din<br>forecast</th><th>15 din<br>Entry (kinne)</th><th>15 din<br>Exit (becne)</th><th>30 din<br>forecast</th><th>30 din<br>Entry (kinne)</th><th>30 din<br>Exit (becne)</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="mut">Stock ma click garera chart ra pura reason herne. Entry = kinne bhaw, Exit = becne target (forecast madhya), stop-loss reason ma. Sabai niyam-adharit anuman ho, financial salaha haina; 30 din ko forecast sabai bhanda kam bharpardo.</div>
 <h2>3. Compare</h2><div class="card"><select id="ca"></select> <select id="cb"></select><button id="cc">Compare garnus</button><div class="tw" id="co"></div></div>
 <div id="dt"></div>
 
@@ -82,10 +84,10 @@ if(b){F={};csv(await rd(b)).forEach(x=>{F[(x.symbol||"").toUpperCase()]={sector:
 run()}
 const avg=a=>a.reduce((x,y)=>x+y,0)/(a.length||1);
 function rsi(c){let g=0,l=0;for(let i=c.length-14;i<c.length;i++){const d=c[i]-c[i-1];d>0?g+=d:l-=d}return l===0?100:100-100/(1+g/l)}
-function fcast(c){const n=30,y=c.slice(-n).map(Math.log),mx=(n-1)/2,my=avg(y);let sxy=0,sxx=0;y.forEach((v,i)=>{sxy+=(i-mx)*(v-my);sxx+=(i-mx)**2});const b=sxy/sxx;
+function fcast(c,H=10,n=30){n=Math.min(n,c.length);const y=c.slice(-n).map(Math.log),mx=(n-1)/2,my=avg(y);let sxy=0,sxx=0;y.forEach((v,i)=>{sxy+=(i-mx)*(v-my);sxx+=(i-mx)**2});const b=sxy/sxx;
 const rt=[];for(let i=1;i<c.length;i++)rt.push(Math.log(c[i]/c[i-1]));const m=avg(rt.slice(-30)),sd=Math.sqrt(avg(rt.slice(-30).map(x=>(x-m)**2)));
-const L=c[c.length-1],mid=[],up=[],lo=[];for(let j=1;j<=10;j++){mid.push(L*Math.exp(b*j));up.push(L*Math.exp(b*j+1.5*sd*Math.sqrt(j)));lo.push(L*Math.exp(b*j-1.5*sd*Math.sqrt(j)))}
-return{mid,up,lo,pct:(Math.exp(b*10)-1)*100,sd}}
+const L=c[c.length-1],mid=[],up=[],lo=[];for(let j=1;j<=H;j++){mid.push(L*Math.exp(b*j));up.push(L*Math.exp(b*j+1.5*sd*Math.sqrt(j)));lo.push(L*Math.exp(b*j-1.5*sd*Math.sqrt(j)))}
+return{mid,up,lo,pct:(Math.exp(b*H)-1)*100,sd}}
 const POS=["profit","bonus","dividend","growth","record","approve","increase","upgrade","gain","नाफा","लाभांश","बोनस"],NEG=["loss","penalty","fraud","decline","ban","delay","fall","down","default","घाटा","जरिवाना"];
 function analyze(s){const q=P[s];if(!q||q.length<55)return null;const c=q.map(x=>x.c),v=q.map(x=>x.v),L=c[c.length-1],s20=avg(c.slice(-20)),s50=avg(c.slice(-50)),r=rsi(c),mom=(L/c[c.length-21]-1)*100,vr=avg(v.slice(-10))/(avg(v.slice(-30,-10))||1),fc=fcast(c);const I=[];
 const add=(p,m,t,k)=>I.push({p,m,t,k});
@@ -100,7 +102,7 @@ if(f.roe>=0)add(f.roe>=15?8:f.roe>=10?5:1,8,"ROE "+f.roe+"%"+(f.roe>=15?": kamai
 if(f.div>=0)add(f.div>=6?6:f.div>=3?4:1,6,"Dividend "+f.div+"%"+(f.div>=6?": ramro.":f.div>=3?": madhyam.":": kam/chhaina."),f.div>=6?"g":f.div>=3?"y":"r")}
 const nl=$("#nw").value.split("\n").filter(l=>l.split("|")[0].trim().toUpperCase()===s);if(nl.length){let n=0;nl.forEach(l=>{const t=l.toLowerCase();POS.forEach(w=>{if(t.includes(w))n++});NEG.forEach(w=>{if(t.includes(w))n--})});add(Math.max(0,Math.min(10,5+n*2)),10,"News ("+nl.length+"): "+nl.map(l=>l.split("|").slice(1).join("|").trim()).join("; "),n>0?"g":n<0?"r":"y")}
 const sc=Math.round(100*I.reduce((a,i)=>a+i.p,0)/I.reduce((a,i)=>a+i.m,0));
-return{s,sc,I,fc,c,sec:f?f.sector:"-",vd:sc>=65?["Kinna ramro (Buy)","g"]:sc>=45?["Hold / herera basne","y"]:["Nakinna (Avoid)","r"]}}
+const vk=sc>=65?0:sc>=45?1:2;return{s,sc,I,fc,c,s20,r,mom,vk,lo20:Math.min(...c.slice(-20)),sec:f?f.sector:"-",vd:sc>=65?["Kinna ramro (Buy)","g"]:sc>=45?["Hold / herera basne","y"]:["Nakinna (Avoid)","r"]}}
 function run(){R=Object.keys(P).map(analyze).filter(Boolean).sort((a,b)=>b.sc-a.sc);
 $("#tb").innerHTML=R.map(a=>`<tr class="row" data-s="${esc(a.s)}"><td><b>${esc(a.s)}</b></td><td>${esc(a.sec)}</td><td>${a.sc}/100</td><td><span class="b ${a.vd[1]}">${a.vd[0]}</span></td><td class="${a.fc.pct>=0?"g":"r"}">${a.fc.pct.toFixed(1)}%</td></tr>`).join("")||'<tr><td colspan="5">Kunai stock ma 55+ din ko data chaidaina. CSV jaanch garnus.</td></tr>';
 $("#dt").innerHTML="";document.querySelectorAll(".row").forEach(e=>e.onclick=()=>show(e.dataset.s));const o=R.map(a=>`<option>${esc(a.s)}</option>`).join("");$("#ca").innerHTML=o;$("#cb").innerHTML=o;if(R[1])$("#cb").selectedIndex=1}
@@ -115,6 +117,16 @@ function prof(a){const L=a.c[a.c.length-1],f=a.fc;return`<div class="card"><b>Pr
 function pf(){const e=$("#pr"),x=+$("#am").value||0,t=k=>{const v=x*(+e.dataset[k]-1);return(v>=0?"+":"")+Math.round(v).toLocaleString("en-IN")};e.innerHTML=`Madhya: <b>Rs. ${t("m")}</b> | Sabai bhanda ramro: Rs. ${t("u")} | Sabai bhanda naramro: Rs. ${t("l")}`}
 $("#cc").onclick=()=>{const A=R.find(x=>x.s===$("#ca").value),B=R.find(x=>x.s===$("#cb").value);if(!A||!B)return;const row=(n,f)=>`<tr><td>${n}</td><td>${f(A)}</td><td>${f(B)}</td></tr>`,ret=a=>{const c=a.c.slice(-250);return((c[c.length-1]/c[0]-1)*100).toFixed(1)+"%"},fd=(a,k)=>F[a.s]&&F[a.s][k]!=null?F[a.s][k]:"-",W=A.sc>=B.sc?A:B;
 $("#co").innerHTML=`<table><tr><th></th><th>${esc(A.s)}</th><th>${esc(B.s)}</th></tr>`+row("Score",a=>a.sc+"/100")+row("Verdict",a=>a.vd[0])+row("Barsa return",ret)+row("10 din forecast",a=>a.fc.pct.toFixed(1)+"%")+row("P/E",a=>fd(a,"pe"))+row("P/B",a=>fd(a,"pbv"))+row("ROE",a=>fd(a,"roe"))+row("Dividend",a=>fd(a,"div"))+`</table><p><b>${esc(W.s)}</b> ko score badhi chha. Mukhya karan: ${W.I.filter(i=>i.k==="g").slice(0,2).map(i=>esc(i.t)).join(" ")}</p>`};
+const Pz=x=>x==null?'-':'Rs '+(x<100?x.toFixed(2):Math.round(x).toLocaleString('en-IN'));
+function plan(a,H){const f=fcast(a.c,H,H*2),L=a.c[a.c.length-1],mid=f.mid[H-1],up=f.up[H-1],lo=f.lo[H-1],fm=(mid/L-1)*100,en=Math.max(Math.min(L,a.s20),a.lo20),pc=(mid/en-1)*100,Q=Pz;
+if(a.vk===2||fm<=0||pc<3){const why=a.vk===2?'score '+a.sc+'/100 kamjor':fm<=0?H+' din ko trend forecast '+fm.toFixed(1)+'% (ghatne dishaa)':H+' din ma sambhavit naafa '+pc.toFixed(1)+'% matra, jokhim anusar chhoto';
+return{en:null,ex:L,fm,txt:'ENTRY nagarnu: '+why+'; RSI '+a.r.toFixed(0)+', 20-din momentum '+a.mom.toFixed(1)+'%. Entry tab matra sochnu jab price 20-din average '+Q(a.s20)+' mathi tikera close hos. EXIT: pahile nai holding chha vane aajako bhaw '+Q(L)+' nazik bechnu ramro; stop-loss '+Q(lo)+' (forecast ko talo range).'}}
+const stop=Math.min(lo,en*.97);
+return{en,ex:mid,fm,txt:'ENTRY '+Q(en)+': '+(en>=L?'aajako bhaw':'20-din average '+Q(a.s20)+' ma pullback aaudaa')+', 20-din talo '+Q(a.lo20)+' support ko najik. Score '+a.sc+'/100 ('+(a.vk===0?'ramro':'madhyam, tesaile pullback ma matra')+'), RSI '+a.r.toFixed(0)+(a.r>70?' (overbought, jokhim)':a.r<30?' (oversold)':'')+', 20-din momentum '+a.mom.toFixed(1)+'%. EXIT '+Q(mid)+' (+'+pc.toFixed(1)+'% entry bata): '+H+' din ko trend forecast madhya, upper range '+Q(up)+'. STOP-LOSS '+Q(stop)+': yo muni band bhayo vane bechera nikalnu.'}}
+function draw(){const q=($('#q').value||'').trim().toUpperCase(),cl=p=>`<td class=${p.fm>=0?'g':'r'}>${p.fm.toFixed(1)}%</td>`+(p.en==null?`<td>-</td><td>${Pz(p.ex)}<br><span class=mut>(holding bhae)</span></td>`:`<td>${Pz(p.en)}</td><td>${Pz(p.ex)}</td>`);
+$('#tb').innerHTML=R.filter(a=>a.s.includes(q)).map(a=>`<tr class=row data-s='${esc(a.s)}'><td><b>${esc(a.s)}</b></td><td>${a.sc}</td><td><span class='b ${a.vd[1]}'>${a.vd[0]}</span></td>${cl(a.p15)}${cl(a.p30)}</tr><tr class=rs><td colspan=9><p><b>15 din:</b> ${esc(a.p15.txt)}</p><p><b>30 din:</b> ${esc(a.p30.txt)}</p></td></tr>`).join('')||'<tr><td colspan=9>Kunai stock bhetiyena.</td></tr>';
+document.querySelectorAll('.row').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+const _run=run;run=function(){_run();R.forEach(a=>{a.p15=plan(a,15);a.p30=plan(a,30)});draw()};
 $("#go").onclick=load;$("#dm").onclick=demo;demo();
 fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{P=j.prices;F=j.fund||{};$("#nw").value=(j.news||[]).map(n=>n.symbol+" | "+n.title).join("\n");$("#mode").textContent="Live data, antim update: "+j.updated;$("#mode").style.display="block";run()}).catch(()=>{});
 </script></main></body></html>
