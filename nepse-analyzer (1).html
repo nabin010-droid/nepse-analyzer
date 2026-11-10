@@ -1,0 +1,251 @@
+<!doctype html><html lang="ne"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>NEPSE Analyzer</title><meta name="color-scheme" content="light dark">
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#666;--card:#f4f4f1;--bd:#d9d9d4;--g:#0a7d3b;--r:#c62828;--y:#b26a00;--ac:#1d4ed8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171a;--fg:#ececec;--mut:#9aa0a6;--card:#1f2226;--bd:#33373d;--g:#4cd17f;--r:#ff6b6b;--y:#ffb84d;--ac:#7aa2ff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171a;--fg:#ececec;--mut:#9aa0a6;--card:#1f2226;--bd:#33373d;--g:#4cd17f;--r:#ff6b6b;--y:#ffb84d;--ac:#7aa2ff;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:20px 0 8px}
+.mut{color:var(--mut);font-size:13px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin:10px 0}
+.warn{border-color:var(--y)}
+label{display:block;font-size:13px;margin:8px 0 2px;color:var(--mut)}
+textarea,input[type=file]{width:100%;box-sizing:border-box;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:8px;font:inherit}
+button{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer;margin:8px 8px 0 0}
+button.s{background:transparent;color:var(--fg);border:1px solid var(--bd)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
+tr.row{cursor:pointer}tr.row:hover{background:var(--card)}
+.b{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid currentColor}
+.g{color:var(--g)}.r{color:var(--r)}.y{color:var(--y)}
+.rs td{white-space:normal;font-size:13px;line-height:1.5}.rs p{margin:3px 0}
+li{margin:4px 0}ul{padding-left:18px}
+svg{width:100%;height:auto;display:block}
+</style></head><body><main>
+<h1>NEPSE Analyzer</h1>
+<div class="mut">Share ko technical + fundamental + news analysis, reason sahit. Forecast ek statistical anuman matra ho.</div>
+<div class="card warn mut" id="mode">DEMO DATA: tala ko stock haru kalpanik (BANK-A jasta) ho, asli NEPSE data haina. Asli data halna tala CSV upload garnus.</div>
+<div class="card mut" id="chk" style="display:none"></div>
+
+<h2>Bazaar adhyayan (online khojera, 9 Nov 2026)</h2>
+<div class="card"><div class="mut">Source: nepalstock.com, Kathmandu Post, OnlineKhabar, ShareSansar, HamroShare, ChartNepali, NepseTrading. Yo asli data ho; tala ko stock table chai abhi demo ho.</div>
+<b>Index ko sthiti</b><ul>
+<li>NEPSE 6 Nov ma 2,655.22 (+0.09%), turnover Rs 3.46 arba. 5 Nov ma 2,652.58 (-0.49%).</li>
+<li>52-hapta range 2,513 - 2,960: index high bata lagbhag 10% talo, low bata 5.6% mathi chha.</li>
+<li>Oct 26-30 hapta: +2.13% (2,690.15), turnover 53% badhera Rs 34.39 arba, hydropower sub-index +3.78% (Kathmandu Post).</li>
+<li>Index 20 ra 50-din EMA (~2,621-2,627) mathi chha; RSI 60 (neutral); 6 Nov ma 158 badhe, 107 ghatye.</li></ul>
+<b>Mero vishleshan (rule-adharit, bhavishyabani haina)</b><ul>
+<li class="y">Chhoto samay ko dishaa: sideways dekhi halka positive. Support ~2,629; tyo bhatkiyo vane 52-hapta low 2,513 samma jokhim. 2,690 mathi tikera close bhayo vane upar ko bato khulchha.</li>
+<li class="r">Jokhim: Kathmandu Post le bhaneko chha, bhaw badhnu company ko kamai sudhar nabhayera bazaar ma tarlata ra karja-lagani badheko le pani huna sakchha.</li>
+<li class="y">Hydropower: turnover ko 45.2% (HamroShare), rally ko neta. Tara chito badhne-ghatne, profit-booking ko jokhim dherai.</li>
+<li class="y">Q1 FY 2083/84 natija aaudai chhan (6 Nov): Mero Microfinance Rs 86.62m, Nirdhan Utthan Rs 115.46m, Mid Solu Hydropower Rs 57.48m, SuryaJyoti Life Rs 102.95m, Asian Hydropower Rs 33.87m, Sagarmatha Jalbidhyut Rs 15.70m, Infinity Laghubitta Rs 24.55m. Gata barsa sanga tulana bina ramro/naramro bhanna mildaina.</li>
+<li class="g">NRB: policy rate 4.50%, SDF 2.75%, bank rate 6% unchanged (Jul 2026 ko monetary policy anusar, tyaspachhi parivartan ko khabar paaeko chhaina). Sasto paisa jaari rahanu bazaar ko lagi sahayogi tatwa ho.</li></ul>
+<b>6 Nov ka mukhya chal (signal, sifaris haina)</b>
+<div class="tw"><table><tr><th>Stock</th><th>Dekhieko</th><th>Mero padhai</th></tr>
+<tr><td>BENH</td><td>28 Oct Rs 536.70 bata 6 Nov Rs 840 (+56%)</td><td class="r">Dherai chadhisakeko, chase nagarnu</td></tr>
+<tr><td>CREST</td><td>+14.08% (Rs 1,192), turnover ~Rs 2 crore matra</td><td class="r">Kam turnover ma ucchal, sabdhan</td></tr>
+<tr><td>GCIL</td><td>-6.4% (Rs 380), turnover Rs 21.6 crore (sabai bhanda dherai)</td><td class="r">Dherai bechne dabab, sthir nabhaisamma nakinnu</td></tr>
+<tr><td>RBCL</td><td>+3.42% (Rs 14,200), kam volume</td><td class="y">Herera basne</td></tr></table></div>
+<div class="mut">Pratyek stock ko 1 barsa ko price history ra fundamental online search bata sabai nikalna sakiyena. Tesaile tala ko score/forecast ko lagi data.json (script bata) chahinchha. Yo financial salaha haina.</div></div>
+
+<h2>1. Data haalnus</h2>
+<div class="card">
+<label>Price CSV (columns: symbol,date,close,volume) - ShareSansar/Merolagani/NEPSE bata export</label>
+<input type="file" id="fp" accept=".csv">
+<label>Fundamentals CSV (columns: symbol,sector,eps,pe,pbv,roe,div) - optional</label>
+<input type="file" id="ff" accept=".csv">
+<label>News (ek line ma ek: SYMBOL | headline)</label>
+<textarea id="nw" rows="4"></textarea>
+<button id="go">Analyze garnus</button><button class="s" id="dm">Demo data feri</button>
+</div>
+
+<h2>2. Ranking, Entry ra Exit</h2>
+<input id="q" placeholder="Stock khojnus (jastai NABIL)" oninput="draw()" style="width:100%;box-sizing:border-box;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:8px;padding:8px;font:inherit">
+<div class="card tw"><table><thead><tr><th>Stock</th><th>Score</th><th>Verdict</th><th>15 din<br>forecast</th><th>15 din<br>Entry (kinne)</th><th>15 din<br>Exit (becne)</th><th>30 din<br>forecast</th><th>30 din<br>Entry (kinne)</th><th>30 din<br>Exit (becne)</th></tr></thead><tbody id="tb"></tbody></table></div>
+<div class="card mut"><b>Tarika (research-adharit):</b> (1) Score = trend (SMA20/50), MACD, RSI, Bollinger, momentum, volume, NEPSE index sanga 60-din tulana, risk (volatility/drawdown), valuation ra news. (2) Prob gain ra Exit = tyo stock ko pachhillo ~1 barsa ma yehi trend avastha bata suru bhayeko 15/30 din ko asli return ko distribution (median, P10, P90), abhiko volatility anusar milaieko. (3) Entry = pullback/support najik; Exit = median target (resistance agadi); Stop = support talo ra 2xATR. (4) Backtest: yehi niyam le pachhillo barsa ma kati pataka naafa dieko (confidence). (5) Kharcha: broker ~0.4% x2, SEBON 0.015% x2, DP Rs 25, CGT 7.5% naafa ma (aafno broker sanga verify garnus). <b>Sima:</b> NEPSE ma ek din ±10% circuit hunchha, stop-loss ma bikna garo huna sakchha. Backtest ko win rate bhavishya ko garanti haina. Yo financial salaha haina.</div>
+<h2>3. Compare</h2><div class="card"><select id="ca"></select> <select id="cb"></select><button id="cc">Compare garnus</button><div class="tw" id="co"></div></div>
+<div id="dt"></div>
+
+<div class="card mut">Yo tool financial salaha haina. Score niyam-adharit ganana ho, bhavishyabani haina; share bazaar ma pesa ghatna sakchha. Kinna agadi SEBON/NEPSE ko official data, company ko report ra licensed broker/advisor sanga janch garnus.</div>
+
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let P={},F={},R=[];
+function rng(s){return()=>(s=(s*1664525+1013904223)%4294967296)/4294967296}
+function demo(){P={};F={};
+[["BANK-A","Banking",.0015,.014,14,1.8,14,7],["HYDRO-B","Hydropower",-.0012,.022,38,3.9,6,1],["INS-C","Insurance",.0004,.018,22,2.6,11,4],["FIN-D","Finance",-.0006,.02,30,2.9,8,2],["TELE-E","Telecom",.0009,.011,18,3.1,22,8],["MFG-F","Manufacturing",.002,.025,26,4.2,12,0]].forEach(([s,sec,d,v,pe,pb,roe,dv],i)=>{const r=rng(i*977+13);let p=300+i*90;P[s]=[];for(let k=0;k<120;k++){p*=Math.exp(d+v*(r()-.5)*2);P[s].push({c:+p.toFixed(1),v:Math.round(20000*(1+r()+(k>100?(d>0?.6:.4):0)))})}F[s]={sector:sec,pe,pbv:pb,roe,div:dv}});
+$("#nw").value="BANK-A | record profit and bonus share approved\nHYDRO-B | loss reported, penalty from regulator\nFIN-D | merger delay, decline in deposits";
+$("#mode").style.display="block";run()}
+function csv(t){const L=t.trim().split(/\r?\n/).map(l=>l.split(",").map(x=>x.trim()));const h=L.shift().map(x=>x.toLowerCase());return L.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
+const rd=f=>new Promise(ok=>{const r=new FileReader();r.onload=()=>ok(r.result);r.readAsText(f)});
+async function load(){const a=$("#fp").files[0],b=$("#ff").files[0];
+if(a){P={};csv(await rd(a)).forEach(x=>{const s=NK(x.symbol);if(!s||isNaN(+x.close))return;(P[s]=P[s]||[]).push({c:+x.close,v:+x.volume||0,d:x.date})});$("#mode").style.display="none"}
+if(b){F={};csv(await rd(b)).forEach(x=>{F[NK(x.symbol)]={sector:SEC(x.sector),pe:+x.pe,pbv:+x.pbv,roe:+x.roe,div:+x.div}})}
+run()}
+const avg=a=>a.reduce((x,y)=>x+y,0)/(a.length||1);
+function rsi(c){let g=0,l=0;for(let i=c.length-14;i<c.length;i++){const d=c[i]-c[i-1];d>0?g+=d:l-=d}return l===0?100:100-100/(1+g/l)}
+function fcast(c,H=10,n=30){n=Math.min(n,c.length);const y=c.slice(-n).map(Math.log),mx=(n-1)/2,my=avg(y);let sxy=0,sxx=0;y.forEach((v,i)=>{sxy+=(i-mx)*(v-my);sxx+=(i-mx)**2});const b=sxy/sxx;
+const rt=[];for(let i=1;i<c.length;i++)rt.push(Math.log(c[i]/c[i-1]));const m=avg(rt.slice(-30)),sd=Math.sqrt(avg(rt.slice(-30).map(x=>(x-m)**2)));
+const L=c[c.length-1],mid=[],up=[],lo=[];for(let j=1;j<=H;j++){mid.push(L*Math.exp(b*j));up.push(L*Math.exp(b*j+1.5*sd*Math.sqrt(j)));lo.push(L*Math.exp(b*j-1.5*sd*Math.sqrt(j)))}
+return{mid,up,lo,pct:(Math.exp(b*H)-1)*100,sd}}
+const POS=["profit","bonus","dividend","growth","record","approve","increase","upgrade","gain","नाफा","लाभांश","बोनस"],NEG=["loss","penalty","fraud","decline","ban","delay","fall","down","default","घाटा","जरिवाना"];
+function analyze(s){const q=P[s];if(!q||q.length<55)return null;const c=q.map(x=>x.c),v=q.map(x=>x.v),L=c[c.length-1],s20=avg(c.slice(-20)),s50=avg(c.slice(-50)),r=rsi(c),mom=(L/c[c.length-21]-1)*100,vr=avg(v.slice(-10))/(avg(v.slice(-30,-10))||1),fc=fcast(c);const I=[];
+const add=(p,m,t,k)=>I.push({p,m,t,k});
+if(L>s20&&s20>s50)add(10,10,"Trend uptrend: price 20-din ra 50-din average duita bhanda mathi (L "+L.toFixed(0)+").","g");else if(L<s20&&s20<s50)add(0,10,"Trend downtrend: price duita moving average bhanda talo.","r");else add(5,10,"Trend mixed: spasta dishaa chhaina.","y");
+if(r<30)add(8,8,"RSI "+r.toFixed(0)+": oversold, bounce ko sambhavana tara girawat chalirahna pani sakchha.","y");else if(r>70)add(2,8,"RSI "+r.toFixed(0)+": overbought, thulo badhai pachhi correction ko jokhim.","r");else add(6,8,"RSI "+r.toFixed(0)+": santulit.","g");
+add(mom>5?8:mom>0?5:mom>-5?3:0,8,"20-din momentum "+mom.toFixed(1)+"%.",mom>0?"g":"r");
+add(vr>1.2&&mom>0?4:vr>1.2?0:2,4,vr>1.2?(mom>0?"Volume badhdai, badhdo price sanga: majboot sanket.":"Volume badhdai tara price ghatdai: becheko dabab."):"Volume samanya.",vr>1.2?(mom>0?"g":"r"):"y");
+add(fc.pct>3?8:fc.pct>0?5:fc.pct>-3?3:0,8,"Trend forecast: 10 din ma "+fc.pct.toFixed(1)+"% (statistical anuman).",fc.pct>0?"g":"r");
+const f=F[s];if(f){if(f.pe>0)add(f.pe<=15?10:f.pe<=25?6:2,10,"P/E "+f.pe+(f.pe<=15?": sasto valuation.":f.pe<=25?": thik-thak.":": mahango."),f.pe<=15?"g":f.pe<=25?"y":"r");
+if(f.pbv>0)add(f.pbv<=2?8:f.pbv<=3.5?5:1,8,"P/B "+f.pbv+(f.pbv<=2?": book value ko najik.":f.pbv<=3.5?": madhyam.":": book value bhanda dherai mahango."),f.pbv<=2?"g":f.pbv<=3.5?"y":"r");
+if(f.roe>=0)add(f.roe>=15?8:f.roe>=10?5:1,8,"ROE "+f.roe+"%"+(f.roe>=15?": kamai ramro.":f.roe>=10?": thik.":": kamjor kamai."),f.roe>=15?"g":f.roe>=10?"y":"r");
+if(f.div>=0)add(f.div>=6?6:f.div>=3?4:1,6,"Dividend "+f.div+"%"+(f.div>=6?": ramro.":f.div>=3?": madhyam.":": kam/chhaina."),f.div>=6?"g":f.div>=3?"y":"r")}
+const nl=$("#nw").value.split("\n").filter(l=>l.split("|")[0].trim().toUpperCase()===s);if(nl.length){let n=0;nl.forEach(l=>{const t=l.toLowerCase();POS.forEach(w=>{if(t.includes(w))n++});NEG.forEach(w=>{if(t.includes(w))n--})});add(Math.max(0,Math.min(10,5+n*2)),10,"News ("+nl.length+"): "+nl.map(l=>l.split("|").slice(1).join("|").trim()).join("; "),n>0?"g":n<0?"r":"y")}
+const sc=Math.round(100*I.reduce((a,i)=>a+i.p,0)/I.reduce((a,i)=>a+i.m,0));
+const vk=sc>=65?0:sc>=45?1:2;return{s,sc,I,fc,c,s20,r,mom,vk,lo20:Math.min(...c.slice(-20)),sec:f?f.sector:"-",vd:sc>=65?["Kinna ramro (Buy)","g"]:sc>=45?["Hold / herera basne","y"]:["Nakinna (Avoid)","r"]}}
+function run(){R=Object.keys(P).map(analyze).filter(Boolean).sort((a,b)=>b.sc-a.sc);
+$("#tb").innerHTML=R.map(a=>`<tr class="row" data-s="${esc(a.s)}"><td><b>${esc(a.s)}</b></td><td>${esc(a.sec)}</td><td>${a.sc}/100</td><td><span class="b ${a.vd[1]}">${a.vd[0]}</span></td><td class="${a.fc.pct>=0?"g":"r"}">${a.fc.pct.toFixed(1)}%</td></tr>`).join("")||'<tr><td colspan="5">Kunai stock ma 55+ din ko data chaidaina. CSV jaanch garnus.</td></tr>';
+$("#dt").innerHTML="";document.querySelectorAll(".row").forEach(e=>e.onclick=()=>show(e.dataset.s));const o=R.map(a=>`<option>${esc(a.s)}</option>`).join("");$("#ca").innerHTML=o;$("#cb").innerHTML=o;if(R[1])$("#cb").selectedIndex=1}
+function chart(a){const n=60,h=a.c.slice(-n),f=a.fc,all=h.concat(f.up,f.lo),mn=Math.min(...all),mx=Math.max(...all),W=600,H=220,T=n+10,X=i=>5+i*(W-10)/(T-1),Y=v=>H-10-(v-mn)/(mx-mn||1)*(H-20);
+const pt=(arr,o)=>arr.map((v,i)=>X(o+i).toFixed(1)+","+Y(v).toFixed(1));const e=h[n-1];
+const ln=pt(h,0).join(" "),m=pt([e].concat(f.mid),n-1).join(" "),band=pt([e].concat(f.up),n-1).concat(pt([e].concat(f.lo),n-1).reverse()).join(" ");
+return`<svg viewBox="0 0 ${W} ${H}"><polygon points="${band}" fill="var(--ac)" opacity=".18"/><polyline points="${ln}" fill="none" stroke="var(--fg)" stroke-width="2"/><polyline points="${m}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-dasharray="5 4"/><text x="8" y="14" fill="var(--mut)" font-size="12">${mn.toFixed(0)} - ${mx.toFixed(0)}</text></svg>`}
+function show(s){const a=R.find(x=>x.s===s);$("#dt").innerHTML=`<h2>${esc(s)}: <span class="${a.vd[1]}">${a.vd[0]}</span> (${a.sc}/100)</h2><div class="card">${chart(a)}<div class="mut">Kalo: pachhillo 60 din. Neelo dashed + chhaya: 10 din ko forecast range.</div></div>${stat(a)}${prof(a)}<div class="card"><b>Reasons</b><ul>${a.I.map(i=>`<li class="${i.k}">${esc(i.t)} <span class="mut">(${i.p}/${i.m})</span></li>`).join("")}</ul></div>`;pf();$("#dt").scrollIntoView({behavior:"smooth"})}
+function stat(a){const c=a.c.slice(-250),L=c[c.length-1],hi=Math.max(...c),lo=Math.min(...c);let pk=c[0],dd=0;c.forEach(v=>{pk=Math.max(pk,v);dd=Math.min(dd,v/pk-1)});const rt=[];for(let i=1;i<c.length;i++)rt.push(Math.log(c[i]/c[i-1]));const m=avg(rt),vol=Math.sqrt(avg(rt.map(x=>(x-m)**2))*250)*100;
+return`<div class="card"><b>Pachhillo ${c.length} din (max 1 barsa) ko vishleshan</b><ul><li>Return: ${((L/c[0]-1)*100).toFixed(1)}%</li><li>High/Low: ${hi.toFixed(0)} / ${lo.toFixed(0)} (high bata ${((L/hi-1)*100).toFixed(1)}%)</li><li>Volatility (barsik): ${vol.toFixed(0)}%</li><li>Sabai bhanda thulo girawat: ${(dd*100).toFixed(1)}%</li></ul></div>`}
+function prof(a){const L=a.c[a.c.length-1],f=a.fc;return`<div class="card"><b>Profit/loss anuman (10 din)</b><br>Lagani Rs. <input type="number" id="am" value="100000" style="width:130px;display:inline-block" oninput="pf()"><div id="pr" data-m="${f.mid[9]/L}" data-u="${f.up[9]/L}" data-l="${f.lo[9]/L}"></div><div class="mut">Range lagbhag 87% sambhavna ko ho, bahira jana sakchha. Brokerage, SEBON fee ra capital gain tax joDieko chhaina.</div></div>`}
+function pf(){const e=$("#pr"),x=+$("#am").value||0,t=k=>{const v=x*(+e.dataset[k]-1);return(v>=0?"+":"")+Math.round(v).toLocaleString("en-IN")};e.innerHTML=`Madhya: <b>Rs. ${t("m")}</b> | Sabai bhanda ramro: Rs. ${t("u")} | Sabai bhanda naramro: Rs. ${t("l")}`}
+$("#cc").onclick=()=>{const A=R.find(x=>x.s===$("#ca").value),B=R.find(x=>x.s===$("#cb").value);if(!A||!B)return;const row=(n,f)=>`<tr><td>${n}</td><td>${f(A)}</td><td>${f(B)}</td></tr>`,ret=a=>{const c=a.c.slice(-250);return((c[c.length-1]/c[0]-1)*100).toFixed(1)+"%"},fd=(a,k)=>F[a.s]&&F[a.s][k]!=null?F[a.s][k]:"-",W=A.sc>=B.sc?A:B;
+$("#co").innerHTML=`<table><tr><th></th><th>${esc(A.s)}</th><th>${esc(B.s)}</th></tr>`+row("Score",a=>a.sc+"/100")+row("Verdict",a=>a.vd[0])+row("Barsa return",ret)+row("10 din forecast",a=>a.fc.pct.toFixed(1)+"%")+row("P/E",a=>fd(a,"pe"))+row("P/B",a=>fd(a,"pbv"))+row("ROE",a=>fd(a,"roe"))+row("Dividend",a=>fd(a,"div"))+`</table><p><b>${esc(W.s)}</b> ko score badhi chha. Mukhya karan: ${W.I.filter(i=>i.k==="g").slice(0,2).map(i=>esc(i.t)).join(" ")}</p>`};
+const Pz=x=>x==null?'-':'Rs '+(x<100?x.toFixed(2):Math.round(x).toLocaleString('en-IN'));
+function plan(a,H){const f=fcast(a.c,H,H*2),L=a.c[a.c.length-1],mid=f.mid[H-1],up=f.up[H-1],lo=f.lo[H-1],fm=(mid/L-1)*100,en=Math.max(Math.min(L,a.s20),a.lo20),pc=(mid/en-1)*100,Q=Pz;
+if(a.vk===2||fm<=0||pc<3){const why=a.vk===2?'score '+a.sc+'/100 kamjor':fm<=0?H+' din ko trend forecast '+fm.toFixed(1)+'% (ghatne dishaa)':H+' din ma sambhavit naafa '+pc.toFixed(1)+'% matra, jokhim anusar chhoto';
+return{en:null,ex:L,fm,txt:'ENTRY nagarnu: '+why+'; RSI '+a.r.toFixed(0)+', 20-din momentum '+a.mom.toFixed(1)+'%. Entry tab matra sochnu jab price 20-din average '+Q(a.s20)+' mathi tikera close hos. EXIT: pahile nai holding chha vane aajako bhaw '+Q(L)+' nazik bechnu ramro; stop-loss '+Q(lo)+' (forecast ko talo range).'}}
+const stop=Math.min(lo,en*.97);
+return{en,ex:mid,fm,txt:'ENTRY '+Q(en)+': '+(en>=L?'aajako bhaw':'20-din average '+Q(a.s20)+' ma pullback aaudaa')+', 20-din talo '+Q(a.lo20)+' support ko najik. Score '+a.sc+'/100 ('+(a.vk===0?'ramro':'madhyam, tesaile pullback ma matra')+'), RSI '+a.r.toFixed(0)+(a.r>70?' (overbought, jokhim)':a.r<30?' (oversold)':'')+', 20-din momentum '+a.mom.toFixed(1)+'%. EXIT '+Q(mid)+' (+'+pc.toFixed(1)+'% entry bata): '+H+' din ko trend forecast madhya, upper range '+Q(up)+'. STOP-LOSS '+Q(stop)+': yo muni band bhayo vane bechera nikalnu.'}}
+function draw(){const q=($('#q').value||'').trim().toUpperCase(),cl=p=>`<td class=${p.fm>=0?'g':'r'}>${p.fm.toFixed(1)}%</td>`+(p.en==null?`<td>-</td><td>${Pz(p.ex)}<br><span class=mut>(holding bhae)</span></td>`:`<td>${Pz(p.en)}</td><td>${Pz(p.ex)}</td>`);
+$('#tb').innerHTML=R.filter(a=>a.s.includes(q)).map(a=>`<tr class=row data-s='${esc(a.s)}'><td><b>${esc(a.s)}</b></td><td>${a.sc}</td><td><span class='b ${a.vd[1]}'>${a.vd[0]}</span></td>${cl(a.p15)}${cl(a.p30)}</tr><tr class=rs><td colspan=9><p><b>15 din:</b> ${esc(a.p15.txt)}</p><p><b>30 din:</b> ${esc(a.p30.txt)}</p></td></tr>`).join('')||'<tr><td colspan=9>Kunai stock bhetiyena.</td></tr>';
+document.querySelectorAll('.row').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+const _run=run;run=function(){_run();R.forEach(a=>{a.p15=plan(a,15);a.p30=plan(a,30)});draw()};
+let IDX=null;
+const ema=(a,n)=>{const k=2/(n+1);let e=a[0];return a.map((v,i)=>i?(e=v*k+e*(1-k)):e)};
+const smaA=(a,i,n)=>{let s=0;for(let k=i-n+1;k<=i;k++)s+=a[k];return s/n};
+const qn=(a,p)=>{const s=[...a].sort((x,y)=>x-y),i=(s.length-1)*p,l=Math.floor(i);return s[l]+(s[Math.ceil(i)]-s[l])*(i-l)};
+const sdv=x=>{const m=avg(x);return Math.sqrt(avg(x.map(y=>(y-m)**2)))};
+function ind(c){const m12=ema(c,12),m26=ema(c,26),mc=m12.map((v,i)=>v-m26[i]),sg=ema(mc,9),h=mc.map((v,i)=>v-sg[i]);
+const rs=c.map((_,i)=>{if(i<14)return 50;let g=0,l=0;for(let k=i-13;k<=i;k++){const d=c[k]-c[k-1];d>0?g+=d:l-=d}return l===0?100:100-100/(1+g/l)});return{h,rs}}
+function stt(c,i){const L=c[i],a=smaA(c,i,20),b=smaA(c,i,50);return L>a&&a>b?1:L<a&&a<b?-1:0}
+function bt(c,h,rs,H){const o=[];let last=-9;for(let t=50;t<c.length-H;t++){if(stt(c,t)===1&&rs[t]<70&&h[t]>0&&t-last>=5){last=t;let mn=c[t];for(let k=t+1;k<=t+H;k++)mn=Math.min(mn,c[k]);o.push({r:c[t+H]/c[t]-1,dd:mn/c[t]-1})}}
+const n=o.length;return{n,win:n?o.filter(x=>x.r>0).length/n:0,avg:n?avg(o.map(x=>x.r))*100:0,dd:n?avg(o.map(x=>x.dd))*100:0}}
+function sr(c){const n=c.length,L=c[n-1],hi=[],lo=[];for(let i=Math.max(4,n-90);i<n-4;i++){const w=c.slice(i-4,i+5);if(c[i]===Math.max(...w))hi.push(c[i]);if(c[i]===Math.min(...w))lo.push(c[i])}
+return{res:hi.filter(x=>x>L*1.005).sort((x,y)=>x-y)[0],sup:lo.filter(x=>x<L*.995).sort((x,y)=>y-x)[0]}}
+function dist(c,H){const n=c.length,cur=stt(c,n-1),all=[],cond=[];for(let i=49;i<n-H;i++){const r=Math.log(c[i+H]/c[i]);all.push(r);if(stt(c,i)===cur)cond.push(r)}
+const ok=cond.length>=15;return{base:ok?cond:all,n:ok?cond.length:all.length,cond:ok}}
+const _an=analyze;analyze=function(s){const a=_an(s);if(!a)return null;const c=a.c,L=c[c.length-1],{h,rs}=ind(c),add=(p,m,t,k)=>a.I.push({p,m,t,k}),hl=h[h.length-1],hp=h[h.length-2];a.hist=hl;
+add(hl>0&&hl>hp?6:hl>0?4:hl>hp?2:0,6,'MACD histogram '+(hl>0?'positive':'negative')+(hl>hp?' ra sudhardai: kharidar ko dabab badhdo.':' ra kamjor hudai.'),hl>0&&hl>hp?'g':hl>0||hl>hp?'y':'r');
+const w=c.slice(-20),mm=avg(w),sg=sdv(w)||1,pb=(L-(mm-2*sg))/(4*sg);
+add(pb>1?0:pb>.8?3:pb>=.2?5:4,5,'Bollinger %B '+(pb*100).toFixed(0)+'%: '+(pb>1?'upper band bahira, overextended (chase nagarnu).':pb>.8?'upper band najik, chase garda jokhim.':pb>=.2?'band ko bichma, santulit.':'lower band najik, bounce sambhav tara trend herne.'),pb>1?'r':pb>.8?'y':pb>=.2?'g':'y');
+const lr=c.slice(1).map((x,i)=>Math.log(x/c[i])),vol=sdv(lr)*Math.sqrt(250)*100;let pk=c[0],dd=0;c.forEach(x=>{pk=Math.max(pk,x);dd=Math.min(dd,x/pk-1)});
+add(vol<35?4:vol<60?2:0,4,'Risk: barsik volatility '+vol.toFixed(0)+'%, sabai bhanda thulo girawat '+(dd*100).toFixed(0)+'%.',vol<35?'g':vol<60?'y':'r');
+if(IDX&&IDX.length>61&&c.length>61){const ic=IDX.map(x=>x.c),rl=((L/c[c.length-61]-1)-(ic[ic.length-1]/ic[ic.length-61]-1))*100;add(rl>5?6:rl>0?4:rl>-5?2:0,6,'NEPSE index sanga tulana (60 din): '+(rl>=0?'+':'')+rl.toFixed(1)+'% '+(rl>0?'(bazaar bhanda ramro)':'(bazaar bhanda kamjor)'),rl>0?'g':'r')}
+a.b15=bt(c,h,rs,15);a.b30=bt(c,h,rs,30);const b=a.b15;
+if(b.n>=4)add(b.win>=.6?6:b.win>=.5?4:b.win>=.4?2:0,6,'Backtest: uptrend+RSI<70+MACD>0 niyam le pachhillo barsa ma '+b.n+' buy signal dieko; 15 din ma '+(b.win*100).toFixed(0)+'% ma naafa, ausat '+b.avg.toFixed(1)+'%, ausat sabai bhanda talo '+b.dd.toFixed(1)+'%.',b.win>=.5?'g':'r');
+a.sc=Math.round(100*a.I.reduce((x,i)=>x+i.p,0)/a.I.reduce((x,i)=>x+i.m,0));a.vk=a.sc>=68?0:a.sc>=56?1:a.sc>=44?2:3;if(c.length<120)a.vk=Math.max(a.vk,2);
+a.vd=[['Strong Buy','g'],['Buy','g'],['Hold / herera basne','y'],['Avoid / nakinnu','r']][a.vk];
+a.conf=b.n>=6&&b.win>=.55?'Uchcha':b.n>=4&&b.win>=.45?'Madhyam':'Kam';return a};
+function plan(a,H){const c=a.c,L=c[c.length-1],d=dist(c,H),Q=Pz;
+if(d.base.length<10)return{en:null,ex:L,stop:L*.92,pu:50,rr:0,net:0,fm:0,txt:'Data kam: '+H+' din ko analysis ko lagi kam se kam ~1 barsa ko history chahinchha.'};
+const lr=c.slice(1).map((x,i)=>Math.log(x/c[i])),vr=Math.max(.7,Math.min(1.5,sdv(lr.slice(-20))/(sdv(lr)||1))),md=qn(d.base,.5),sc=d.base.map(r=>md+(r-md)*vr),q=p=>L*Math.exp(qn(sc,p)),pu=sc.filter(r=>r>0).length/sc.length*100,S=sr(c),z=c.slice(-15),atr=avg(z.slice(1).map((x,i)=>Math.abs(x-z[i]))),p50=q(.5),p10=q(.1),p90=q(.9),fm=(p50/L-1)*100,bx=H===30?a.b30:a.b15;
+const en=Math.max(Math.min(L,a.s20),S.sup||0,a.lo20),ex=S.res&&S.res*.99<p50?S.res*.99:p50,stop=Math.max(Math.min(S.sup?S.sup*.985:1e9,en-2*atr),en*.92),rr=(ex-en)/(en-stop||1e-9),gr=(ex/en-1)*100;let net=gr-.83;if(net>0)net*=.925;
+const why=a.vk>=3?'score '+a.sc+'/100 kamjor':a.vk===2?'score '+a.sc+'/100 (hold zone), spasta signal chhaina':pu<55?H+' din ma gain ko probability '+pu.toFixed(0)+'% matra':gr<3?'upside chhoto ('+gr.toFixed(1)+'%), resistance/forecast le simit':rr<1.5?'reward:risk '+rr.toFixed(1)+' (1.5 bhanda kam)':net<=1?'kharcha ra tax pachhi net naafa '+net.toFixed(1)+'% matra':'';
+const ctx=H+' din ma gain probability '+pu.toFixed(0)+'% ('+d.n+' aitihasik namuna, '+(d.cond?'yehi trend avastha ma':'sabai avastha ma')+'), range P10 '+Q(p10)+' - P90 '+Q(p90)+'. RSI '+a.r.toFixed(0)+', MACD '+(a.hist>0?'positive':'negative')+', confidence '+a.conf+(bx.n?' (backtest '+bx.n+' signal, '+(bx.win*100).toFixed(0)+'% naafa)':' (backtest ko namuna kam)')+'.';
+if(why){const ws=S.sup?S.sup*.985:L*.92;return{en:null,ex:L,stop:ws,pu,rr,net,fm,txt:'ENTRY nagarnu: '+why+'. '+ctx+' Entry tab sochnu jab price '+Q(a.s20)+' (20-din avg) mathi tikera MACD positive hos. Holding chha vane '+(a.vk>=3?'aajako bhaw '+Q(L)+' ma bechnu ramro; ':'')+'stop '+Q(ws)+' (support talo) bhanda talo band bhayo vane nikalnu.'}}
+return{en,ex,stop,pu,rr,net,fm,txt:'ENTRY '+Q(en)+' ('+(en>=L?'aajako bhaw':'pullback, 20-din avg '+Q(a.s20)+' ma')+', support '+Q(S.sup||a.lo20)+' najik). EXIT '+Q(ex)+' (+'+gr.toFixed(1)+'% gross, ~'+net.toFixed(1)+'% net kharcha+CGT pachhi): '+H+' din ko aitihasik median '+Q(p50)+(S.res&&S.res*.99<p50?'; resistance '+Q(S.res)+' agadi becheko':'')+', stretch '+Q(q(.75))+'. STOP '+Q(stop)+' ('+((stop/en-1)*100).toFixed(1)+'%): support talo ra 2xATR. Reward:risk '+rr.toFixed(1)+'. '+ctx}}
+function draw(){const q=($('#q').value||'').trim().toUpperCase(),cl=p=>`<td class=${p.pu>=55?'g':p.pu<45?'r':'y'}>${p.pu.toFixed(0)}%</td>`+(p.en==null?`<td>-</td><td>${Pz(p.ex)}<br><span class=mut>(holding bhae)</span></td>`:`<td>${Pz(p.en)}</td><td>${Pz(p.ex)}</td>`)+`<td>${Pz(p.stop)}</td>`;
+document.querySelector('thead').innerHTML='<tr><th>Stock</th><th>Score</th><th>Verdict</th><th>Confidence</th><th>15d<br>Prob gain</th><th>15d<br>Entry</th><th>15d<br>Exit</th><th>15d<br>Stop</th><th>30d<br>Prob gain</th><th>30d<br>Entry</th><th>30d<br>Exit</th><th>30d<br>Stop</th></tr>';
+$('#tb').innerHTML=R.filter(a=>a.s.includes(q)).map(a=>`<tr class=row data-s='${esc(a.s)}'><td><b>${esc(a.s)}</b></td><td>${a.sc}</td><td><span class='b ${a.vd[1]}'>${a.vd[0]}</span></td><td>${a.conf}</td>${cl(a.p15)}${cl(a.p30)}</tr><tr class=rs><td colspan=12><p><b>15 din:</b> ${esc(a.p15.txt)}</p><p><b>30 din:</b> ${esc(a.p30.txt)}</p></td></tr>`).join('')||'<tr><td colspan=12>Kunai stock bhetiyena.</td></tr>';
+document.querySelectorAll('.row').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+document.head.insertAdjacentHTML('beforeend','<style>.rsd{position:sticky;left:0;width:min(860px,calc(100vw - 80px));white-space:normal}</style>');
+function dist(c,H){const n=c.length,cur=stt(c,n-1),all=[],cond=[];for(let i=49;i<n-H;i++){const r=Math.log(c[i+H]/c[i]);all.push(r);if(stt(c,i)===cur)cond.push(r)}const ok=cond.length>=30;return{base:ok?cond:all,n:ok?cond.length:all.length,cond:ok}}
+function plan(a,H){const c=a.c,L=c[c.length-1],d=dist(c,H),Q=Pz;
+if(d.base.length<10)return{en:null,ex:L,stop:L*.92,pu:50,rr:0,net:0,fm:0,txt:'Data kam: '+H+' din ko analysis ko lagi kam se kam ~1 barsa ko history chahinchha.'};
+const lr=c.slice(1).map((x,i)=>Math.log(x/c[i])),vr=Math.max(.7,Math.min(1.5,sdv(lr.slice(-20))/(sdv(lr)||1))),md=qn(d.base,.5),sc=d.base.map(r=>md+(r-md)*vr),q=p=>L*Math.exp(qn(sc,p)),pu=sc.filter(r=>r>0).length/sc.length*100,S=sr(c),z=c.slice(-15),atr=avg(z.slice(1).map((x,i)=>Math.abs(x-z[i]))),p50=q(.5),p10=q(.1),p90=q(.9),fm=(p50/L-1)*100,bx=H===30?a.b30:a.b15;
+const en=Math.max(Math.min(L,a.s20),S.sup||0,a.lo20),ex=S.res&&S.res*.99<p50?S.res*.99:p50,stop=Math.max(Math.min(S.sup?S.sup*.985:1e9,en-2*atr),en*.92),rr=(ex-en)/(en-stop||1e-9),gr=(ex/en-1)*100;let net=gr-.83;if(net>0)net*=.925;
+const why=a.vk>=3?'tech score '+a.sc+'/100 kamjor':a.vk===2?'tech score '+a.sc+'/100 (hold zone), spasta signal chhaina':pu<55?'gain probability '+pu.toFixed(0)+'% matra (55% bhanda kam)':gr<3?'upside chhoto ('+gr.toFixed(1)+'%), resistance/forecast le simit':rr<1.5?'reward:risk '+rr.toFixed(1)+' (1.5 bhanda kam)':net<=1?'kharcha ra tax pachhi net naafa '+net.toFixed(1)+'% matra':'';
+const ctx='Aitihasik '+d.n+' namuna ('+(d.cond?'yehi trend avastha ma':'sabai avastha ma, kinaki yehi avastha ko namuna kam')+') ma '+H+' din ko range P10 '+Q(p10)+' dekhi P90 '+Q(p90)+'. RSI '+a.r.toFixed(0)+', MACD '+(a.hist>0?'positive':'negative')+', confidence '+a.conf+(bx.n?' (backtest '+bx.n+' signal, '+(bx.win*100).toFixed(0)+'% naafa)':' (backtest ko namuna kam)')+'.';
+if(why){const ws=S.sup?S.sup*.985:L*.92;return{en:null,ex:L,stop:ws,pu,rr,net,fm,txt:'ENTRY nagarnu: '+why+'. '+ctx+' Entry tab sochnu jab price '+Q(a.s20)+' (20-din avg) mathi tikera MACD positive hos. '+(a.vk>=3?'Holding chha vane aajako bhaw '+Q(L)+' ma bechnu ramro; ':'Holding chha vane hold garnus, ')+'stop '+Q(ws)+' (support talo) bhanda talo band bhayo vane nikalnu.'}}
+return{en,ex,stop,pu,rr,net,fm,txt:'ENTRY '+Q(en)+' ('+(en>=L?'aajako bhaw':'pullback, 20-din avg '+Q(a.s20)+' ma')+', support '+Q(S.sup||a.lo20)+' najik). EXIT '+Q(ex)+' (+'+gr.toFixed(1)+'% gross, ~'+net.toFixed(1)+'% net kharcha+CGT pachhi): '+H+' din ko aitihasik median '+Q(p50)+(S.res&&S.res*.99<p50?'; resistance '+Q(S.res)+' agadi becheko':'')+', stretch '+Q(q(.75))+'. STOP '+Q(stop)+' ('+((stop/en-1)*100).toFixed(1)+'%): support talo ra 2xATR. Gain probability '+pu.toFixed(0)+'%, reward:risk '+rr.toFixed(1)+'. '+ctx}}
+function fin(a){const e1=a.p15.en!=null,e2=a.p30.en!=null;a.vd=e1&&e2&&a.vk===0&&a.conf!=='Kam'?['Strong Buy','g']:e1||e2?['Buy','g']:a.vk<=1?['Wait: ramro stock tara aaja entry thik haina','y']:a.vk===2?['Hold / herera basne','y']:['Avoid / nakinnu','r']}
+function draw(){const q=($('#q').value||'').trim().toUpperCase(),rk=a=>a.vd[0]==='Strong Buy'?0:a.vd[0]==='Buy'?1:a.vd[0][0]==='W'?2:a.vd[0][0]==='H'?3:4;R.forEach(fin);R.sort((x,y)=>rk(x)-rk(y)||y.sc-x.sc);
+const cl=(p,a)=>`<td class=${p.pu>=55?'g':p.pu<45?'r':'y'}>${p.pu.toFixed(0)}%</td>`+(p.en==null?`<td class=mut>Wait</td><td>${a.vk>=3?'Bechnu ramro<br><span class=mut>'+Pz(p.ex)+'</span>':'Hold<br><span class=mut>(holding bhae)</span>'}</td>`:`<td>${Pz(p.en)}</td><td>${Pz(p.ex)}</td>`)+`<td>${Pz(p.stop)}</td>`;
+document.querySelector('thead').innerHTML='<tr><th>Stock</th><th>Tech<br>score</th><th>Verdict</th><th>Confidence</th><th>15d<br>Prob gain</th><th>15d<br>Entry</th><th>15d<br>Exit</th><th>15d<br>Stop</th><th>30d<br>Prob gain</th><th>30d<br>Entry</th><th>30d<br>Exit</th><th>30d<br>Stop</th></tr>';
+$('#tb').innerHTML=R.filter(a=>a.s.includes(q)).map(a=>`<tr class=row data-s='${esc(a.s)}'><td><b>${esc(a.s)}</b></td><td>${a.sc}</td><td><span class='b ${a.vd[1]}'>${a.vd[0]}</span></td><td>${a.conf}</td>${cl(a.p15,a)}${cl(a.p30,a)}</tr><tr class=rs><td colspan=12><div class=rsd><p><b>15 din:</b> ${esc(a.p15.txt)}</p><p><b>30 din:</b> ${esc(a.p30.txt)}</p></div></td></tr>`).join('')||'<tr><td colspan=12>Kunai stock bhetiyena.</td></tr>';
+document.querySelectorAll('.row').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+document.head.insertAdjacentHTML('beforeend','<style>.sc{border:1px solid var(--bd);border-radius:12px;padding:12px;margin:12px 0;background:var(--card)}.sh{display:flex;flex-wrap:wrap;gap:8px;align-items:center;cursor:pointer}.sh>b{font-size:18px}.sm{margin:8px 0;padding:8px 10px;border-left:4px solid var(--ac);background:var(--bg);border-radius:6px}.hz2{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:700px){.hz2{grid-template-columns:1fr}}.hz{border:1px solid var(--bd);border-radius:8px;padding:8px;background:var(--bg)}.kv{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:3px 0;border-bottom:1px dashed var(--bd)}.hz ul{margin:6px 0 0;padding-left:18px;font-size:13px}.hz li{margin:3px 0}</style>');
+document.getElementById('q').insertAdjacentHTML('afterend','<select id=vf onchange="draw()" style="margin-top:8px;padding:8px;border-radius:8px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);font:inherit"><option value=all>Sabai</option><option value=buy>Kinne (Buy)</option><option value=wait>Wait</option><option value=hold>Hold</option><option value=avoid>Avoid</option></select>');
+function plan(a,H){const c=a.c,L=c[c.length-1],d=dist(c,H),Q=Pz;
+if(d.base.length<10){const w='data kam, '+H+' din ko analysis ko lagi ~1 barsa ko history chahinchha';return{en:null,ex:L,stop:L*.92,pu:50,rr:0,net:0,gr:0,why:w,bul:['Kina kinnu hudaina: '+w+'.']}}
+const lr=c.slice(1).map((x,i)=>Math.log(x/c[i])),vr=Math.max(.7,Math.min(1.5,sdv(lr.slice(-20))/(sdv(lr)||1))),md=qn(d.base,.5),sc=d.base.map(r=>md+(r-md)*vr),q=p=>L*Math.exp(qn(sc,p)),pu=sc.filter(r=>r>0).length/sc.length*100,S=sr(c),z=c.slice(-15),atr=avg(z.slice(1).map((x,i)=>Math.abs(x-z[i]))),p50=q(.5),p10=q(.1),p90=q(.9),bx=H===30?a.b30:a.b15;
+const en=Math.max(Math.min(L,a.s20),S.sup||0,a.lo20),ex=S.res&&S.res*.99<p50?S.res*.99:p50,stop=Math.max(Math.min(S.sup?S.sup*.985:1e9,en-2*atr),en*.92),rr=(ex-en)/(en-stop||1e-9),gr=(ex/en-1)*100;let net=gr-.83;if(net>0)net*=.925;
+const why=a.vk>=3?'tech score '+a.sc+'/100 kamjor':a.vk===2?'tech score '+a.sc+'/100 (hold zone), spasta signal chhaina':pu<55?'naafa hune probability '+pu.toFixed(0)+'% matra (55% bhanda kam chha)':gr<3?'upside chhoto ('+gr.toFixed(1)+'%), resistance/forecast le simit':rr<1.5?'reward:risk '+rr.toFixed(1)+' (1.5 bhanda kam)':net<=1?'kharcha ra tax pachhi net naafa '+net.toFixed(1)+'% matra':'';
+const sig='RSI '+a.r.toFixed(0)+', MACD '+(a.hist>0?'positive':'negative')+', confidence '+a.conf+(bx.n?' (backtest: '+bx.n+' signal ma '+(bx.win*100).toFixed(0)+'% naafa)':' (backtest ko namuna kam)')+'.';
+const pl=d.n+' aitihasik namuna ('+(d.cond?'yehi trend avastha ma':'sabai avastha ma, kinaki yehi avastha ko namuna kam')+') ma '+H+' din ma '+pu.toFixed(0)+'% ma naafa; worst-case (P10) '+Q(p10)+', best-case (P90) '+Q(p90)+'.';
+if(why){const ws=S.sup?S.sup*.985:L*.92;return{en:null,ex:L,stop:ws,pu,rr,net,gr,why,bul:['Kina kinnu hudaina: '+why+'.',pl,sig]}}
+return{en,ex,stop,pu,rr,net,gr,why:'',bul:['Kina Entry: '+(en>=L?'aajako bhaw':'20-din average ('+Q(a.s20)+') ma pullback')+', support '+Q(S.sup||a.lo20)+' najik. Stop: support talo ra 2xATR, tyo muni band bhayo vane bechnus.','Kina Exit: '+H+' din ma aitihasik median '+Q(p50)+(S.res&&S.res*.99<p50?'; resistance '+Q(S.res)+' agadi becheko':'')+'; stretch target '+Q(q(.75))+'. Reward:risk '+rr.toFixed(1)+'.',pl,sig]}}
+function fin(a){const e1=a.p15.en!=null,e2=a.p30.en!=null;a.vd=e1&&e2&&a.vk===0&&a.conf!=='Kam'?['Strong Buy','g']:e1&&e2?['Buy (15 ra 30 din)','g']:e1?['Buy (15 din ko lagi)','g']:e2?['Buy (30 din ko lagi)','g']:a.vk<=1?['Wait: aaja kinnu hudaina','y']:a.vk===2?['Hold','y']:['Avoid','r']}
+const rk=a=>a.vd[0]==='Strong Buy'?0:a.vd[0][0]==='B'?1:a.vd[0][0]==='W'?2:a.vd[0][0]==='H'?3:4;
+function hz(p,H,a){const Q=Pz,pc=(x,y)=>((x/y-1)*100).toFixed(1),yes=p.en!=null;
+const rows=yes?`<div class=kv><span>Entry (kinne bhaw${p.en<a.c[a.c.length-1]*.995?', bhaw yahaan aauda matra':''})</span><b>${Q(p.en)}</b></div><div class=kv><span>Exit (becne target)</span><b class=g>${Q(p.ex)}</b></div><div class=kv><span>Stop-loss</span><b class=r>${Q(p.stop)} (${pc(p.stop,p.en)}%)</b></div><div class=kv><span>Net naafa (kharcha+tax pachhi)</span><b>~${p.net.toFixed(1)}%</b></div>`:`<div class=kv><span>Kinne shart</span><b>${Q(a.s20)} mathi close</b></div><div class=kv><span>Holding bhae stop-loss</span><b class=r>${Q(p.stop)}</b></div>`;
+return`<div class=hz><div>${H} din ko lagi: ${yes?'<b class=g>KINNUS</b>':'<b class=y>AAJA KINNU HUDAINA</b>'}</div>${rows}<div class=kv><span>Naafa hune probability</span><b class=${p.pu>=55?'g':p.pu<45?'r':'y'}>${p.pu.toFixed(0)}%</b></div><ul>${p.bul.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>`}
+function card(a){const p=a.p15,r=a.p30,e1=p.en!=null,e2=r.en!=null,Q=Pz,L=a.c[a.c.length-1],by=(x,H)=>H+' din: '+Q(x.en)+(x.en<L*.995?' ma bhaw aauda (aile '+Q(L)+')':' ma')+' kinera '+Q(x.ex)+' ma becnus (stop '+Q(x.stop)+')';
+const sm=e1&&e2?'KINNUS. '+by(p,15)+'. '+by(r,30)+'.':e1?'KINNUS (chhoto 15 din ko lagi matra). '+by(p,15)+'. 30 din ko lagi aaja kinnu hudaina: '+r.why+'.':e2?'KINNUS (30 din ko lagi matra). '+by(r,30)+'. 15 din ko lagi aaja kinnu hudaina: '+p.why+'.':a.vk<=1?'AAJA KINNU HUDAINA, parkhanus. Stock ramro chha tara '+p.why+'. Price '+Q(a.s20)+' mathi tikera close bhayo vane kinnus. Holding chha vane hold garnus, stop '+Q(p.stop)+'.':a.vk===2?'HOLD / herera basnus. Naya kinnu hudaina. Holding chha vane stop '+Q(p.stop)+' muni gayo vane bechnus.':'NAKINNUS. Holding chha vane bechnu ramro (aajako bhaw '+Q(L)+'); naya kinnu hudaina.';
+const col=e1||e2?'g':a.vk>=3?'r':'y';
+return`<div class=sc><div class=sh data-s='${esc(a.s)}'><b>${esc(a.s)}</b><span class='b ${a.vd[1]}'>${esc(a.vd[0])}</span><span class=mut>Tech score ${a.sc}/100 | Confidence: ${a.conf} | Bhaw ${Q(L)}</span></div><div class=sm style='border-left-color:var(--${col})'><b>Ke garne:</b> ${esc(sm)}</div><div class=hz2>${hz(p,15,a)}${hz(r,30,a)}</div></div>`}
+let LIM=40;
+function draw(){const q=($('#q').value||'').trim().toUpperCase(),vf=(document.getElementById('vf')||{}).value||'all';R.forEach(fin);R.sort((x,y)=>rk(x)-rk(y)||y.sc-x.sc);
+let box=document.getElementById('cards');if(!box){const t=document.getElementById('tb').closest('.card');t.style.display='none';box=document.createElement('div');box.id='cards';t.parentNode.insertBefore(box,t)}
+const f=R.filter(a=>a.s.includes(q)&&(vf==='all'||(vf==='buy'?rk(a)<2:vf==='wait'?rk(a)===2:vf==='hold'?rk(a)===3:rk(a)===4)));
+box.innerHTML='<div class=mut>'+f.length+' stock mile. Buy mathi, tyaspachhi Wait, Hold, Avoid.</div>'+f.slice(0,LIM).map(card).join('')+(f.length>LIM?`<button onclick='LIM+=40;draw()'>Aru dekhaunus (${f.length-LIM} baaki)</button>`:'');
+box.querySelectorAll('.sh').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+const _an2=analyze;analyze=function(s){try{if((P[s]||[]).some(x=>!(x.c>0)))return null;return _an2(s)}catch(e){console.log(s,e);return null}};
+const _pl=plan;plan=function(a,H){try{return _pl(a,H)}catch(e){const L=a.c[a.c.length-1];return{en:null,ex:L,stop:L*.92,pu:50,rr:0,net:0,gr:0,why:'analysis error',bul:['Analysis error: '+e.message]}}};
+/* ===== FIX: symbol/bank name milaune + data safai ===== */
+let NM={};
+const NK=s=>String(s==null?'':s).replace(/[\u200b\s]+/g,'').toUpperCase().replace(/[^A-Z0-9&.\-]/g,'');
+const NUM=x=>{const n=parseFloat(String(x==null?'':x).replace(/[,\s]|Rs\.?/gi,''));return isNaN(n)?NaN:n};
+const NU=x=>{const n=NUM(x);return isNaN(n)?undefined:n};
+const DT=x=>{const t=Date.parse(x);return isNaN(t)?null:t};
+const SECALIAS={"commercial banks":"Banking","commercial bank":"Banking","bank":"Banking","banks":"Banking","banking":"Banking","hydro power":"Hydropower","hydropower":"Hydropower"};
+const SEC=s=>{s=String(s==null?'':s).replace(/\s+/g,' ').trim();if(!s)return'-';const k=s.toLowerCase();return SECALIAS[k]||k.replace(/(^|\s)\S/g,c=>c.toUpperCase())};
+function normPrices(raw,rep){const out={};
+const push=(k,r)=>{const s=NK(k);if(!s)return;const c=NUM(r.c!=null?r.c:r.close!=null?r.close:r.ltp!=null?r.ltp:r.price);if(!(c>0)){rep.bad++;return}(out[s]=out[s]||[]).push({c:c,v:NUM(r.v!=null?r.v:r.volume!=null?r.volume:r.vol!=null?r.vol:r.qty)||0,d:r.d||r.date||null})};
+if(Array.isArray(raw))raw.forEach(r=>{if(r&&typeof r==='object')push(r.symbol||r.stock||r.s,r)});
+else Object.keys(raw||{}).forEach(k=>{const a=raw[k];
+if(Array.isArray(a))a.forEach(r=>push(k,r&&typeof r==='object'?r:{c:r}));
+else if(a&&typeof a==='object'){const cl=a.close||a.c||[];(Array.isArray(cl)?cl:[]).forEach((c,i)=>push(k,{c:c,v:(a.volume||a.v||[])[i],d:(a.date||a.dates||a.d||[])[i]}))}});
+Object.keys(out).forEach(s=>{const a=out[s];if(a.length&&a.every(x=>DT(x.d)!=null)){a.sort((x,y)=>DT(x.d)-DT(y.d));const seen={};out[s]=a.filter(x=>{const t=DT(x.d);if(seen[t]){rep.dup++;return false}seen[t]=1;return true})}});
+return out}
+function normFund(raw){const out={},names={};
+const put=(k,x)=>{const s=NK(k);if(!s||!x)return;out[s]={sector:SEC(x.sector||x.sect||x.industry),pe:NU(x.pe),pbv:NU(x.pbv!=null?x.pbv:x.pb),roe:NU(x.roe),div:NU(x.div!=null?x.div:x.dividend)};const nm=x.name||x.company||x.companyName;if(nm)names[s]=String(nm).trim()};
+if(Array.isArray(raw))raw.forEach(x=>x&&put(x.symbol||x.stock||x.s,x));else Object.keys(raw||{}).forEach(k=>put(k,raw[k]));
+return{out:out,names:names}}
+const normNames=r=>{const o={};if(r&&typeof r==='object'&&!Array.isArray(r))Object.keys(r).forEach(k=>{const s=NK(k);if(s&&r[k])o[s]=String(r[k]).trim()});return o};
+function normIdx(raw){if(!Array.isArray(raw))return null;const a=raw.map(r=>({c:NUM(r&&typeof r==='object'?(r.c!=null?r.c:r.close!=null?r.close:r.value):r),d:r&&typeof r==='object'?(r.d||r.date):null})).filter(x=>x.c>0);if(a.length&&a.every(x=>DT(x.d)!=null))a.sort((x,y)=>DT(x.d)-DT(y.d));return a.length?a:null}
+function chk(rep){const ps=Object.keys(P),fs=Object.keys(F),sh=ps.filter(s=>P[s].length<55),nf=ps.filter(s=>!F[s]),np=fs.filter(s=>!P[s]),sec={};R.forEach(a=>{sec[a.sec]=(sec[a.sec]||0)+1});
+const li=(t,a)=>a.length?'<li class="y">'+t+' ('+a.length+'): '+esc(a.slice(0,25).join(', '))+(a.length>25?' ...':'')+'</li>':'';
+$('#chk').innerHTML='<b>Data jaanch</b><ul><li>Price ma '+ps.length+' stock, analysis bhayeko '+R.length+'.</li>'+li('55 din bhanda kam data, analysis bhayena',sh)+li('Fundamental chhaina (P/E, ROE...)',nf)+li('Fundamental ma chha tara price chhaina',np)+(rep.bad?'<li class="y">Galat/khali price '+rep.bad+' row hataiyo.</li>':'')+(rep.dup?'<li class="y">Duplicate date '+rep.dup+' row hataiyo.</li>':'')+'<li>Sector: '+esc(Object.keys(sec).sort().map(k=>k+' '+sec[k]).join(' | '))+'</li></ul>';$('#chk').style.display='block'}
+function fillSec(){const e=$('#sf');if(!e)return;const cur=e.value,s=[...new Set(R.map(a=>a.sec))].sort();e.innerHTML='<option value=all>Sabai sector</option>'+s.map(x=>'<option>'+esc(x)+'</option>').join('');e.value=s.includes(cur)?cur:'all'}
+document.getElementById('vf').insertAdjacentHTML('afterend','<select id=sf onchange="draw()" style="margin:8px 0 0 8px;padding:8px;border-radius:8px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);font:inherit"><option value=all>Sabai sector</option></select><select id=so onchange="draw()" style="margin:8px 0 0 8px;padding:8px;border-radius:8px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);font:inherit"><option value=v>Verdict anusar</option><option value=a>A-Z</option><option value=s>Sector anusar</option></select>');
+const _card=card;card=function(a){return _card(a).replace('<span class=mut>Tech score','<span class=mut>'+esc((NM[a.s]?NM[a.s]+' | ':'')+a.sec)+' | Tech score')};
+function draw(){const q=($('#q').value||'').trim().toUpperCase(),vf=($('#vf')||{}).value||'all',sf=($('#sf')||{}).value||'all',so=($('#so')||{}).value||'v';R.forEach(fin);
+R.sort(so==='a'?(x,y)=>x.s.localeCompare(y.s):so==='s'?(x,y)=>String(x.sec).localeCompare(String(y.sec))||x.s.localeCompare(y.s):(x,y)=>rk(x)-rk(y)||y.sc-x.sc);
+let box=document.getElementById('cards');if(!box){const t=document.getElementById('tb').closest('.card');t.style.display='none';box=document.createElement('div');box.id='cards';t.parentNode.insertBefore(box,t)}
+const f=R.filter(a=>(a.s.includes(q)||(NM[a.s]||'').toUpperCase().includes(q))&&(sf==='all'||a.sec===sf)&&(vf==='all'||(vf==='buy'?rk(a)<2:vf==='wait'?rk(a)===2:vf==='hold'?rk(a)===3:rk(a)===4)));
+box.innerHTML='<div class=mut>'+f.length+' stock mile.</div>'+f.slice(0,LIM).map(a=>card(a)).join('')+(f.length>LIM?`<button onclick='LIM+=40;draw()'>Aru dekhaunus (${f.length-LIM} baaki)</button>`:'');
+box.querySelectorAll('.sh').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+const _run3=run;run=function(){_run3();fillSec();draw()};
+function loadLive(){fetch("data.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw 'nofile';return r.json()}).then(j=>{const rep={bad:0,dup:0},f=normFund(j.fund||j.fundamentals||{});P=normPrices(j.prices||j.price||{},rep);F=f.out;NM=Object.assign({},f.names,normNames(j.names));IDX=normIdx(j.index);$("#nw").value=(j.news||[]).map(n=>NK(n.symbol)+" | "+n.title).join("\n");$("#mode").textContent="Live data, antim update: "+(j.updated||"-");$("#mode").style.display="block";run();chk(rep)}).catch(e=>{if(e!=='nofile'){$("#mode").textContent="Error: "+(e&&e.message||e);$("#mode").style.display="block"}})}
+$("#go").onclick=load;$("#dm").onclick=demo;demo();
+loadLive();
+</script></main></body></html>
