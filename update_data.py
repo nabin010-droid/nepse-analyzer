@@ -54,6 +54,54 @@ if os.path.exists("fund.csv"):  # symbol,sector,eps,pe,pbv,roe,div - you maintai
     for r in pd.read_csv("fund.csv").itertuples():
         F[str(r.symbol).upper()] = {"sector": r.sector, "pe": r.pe, "pbv": r.pbv, "roe": r.roe, "div": r.div}
 
+
+# ---- Company name + sector (naya) ----
+def pk(d, *ks):
+    for k in ks:
+        if isinstance(d, dict) and d.get(k) not in (None, ""):
+            return str(d[k]).strip()
+    return ""
+
+def load_names():
+    names, sectors = {}, {}
+    try:  # 1) purano data.json: ek patak name aayepachhi jyaun rahancha
+        for k, v in (json.load(open("data.json", encoding="utf-8")).get("fund") or {}).items():
+            if v.get("name"): names[k.upper()] = v["name"]
+            if v.get("sector") not in (None, "", "-"): sectors[k.upper()] = v["sector"]
+    except Exception:
+        pass
+    if os.path.exists("companies.csv"):  # 2) companies.csv: symbol,name,sector (aafaile thapna milcha)
+        for r in pd.read_csv("companies.csv").fillna("").itertuples():
+            s = str(r.symbol).strip().upper()
+            if str(r.name).strip(): names[s] = str(r.name).strip()
+            if str(r.sector).strip(): sectors[s] = str(r.sector).strip()
+    try:  # 3) NEPSE bata live (pip install nepseman-api). GitHub server block bhaye skip huncha.
+        import asyncio
+        from nepseman_api import NepseClient
+        async def go():
+            async with NepseClient() as n:
+                return await n.company_list()
+        data = asyncio.run(go())
+        rows = data if isinstance(data, list) else (data.get("content") or data.get("data") or []) if isinstance(data, dict) else []
+        for r in rows:
+            s = pk(r, "symbol", "securitySymbol").replace(" ", "").upper()
+            if not s: continue
+            if pk(r, "securityName", "companyName", "name"): names[s] = pk(r, "securityName", "companyName", "name")
+            if pk(r, "sectorName", "sector"): sectors[s] = pk(r, "sectorName", "sector")
+        print("live names:", len(rows))
+    except Exception as e:
+        print("live names skip:", e)
+    return names, sectors
+
+NM, SC = load_names()
+for s in P:
+    f = F.setdefault(s, {})
+    if NM.get(s): f["name"] = NM[s]
+    if f.get("sector") in (None, "", "-"): f["sector"] = SC.get(s) or "-"
+    for k, v in list(f.items()):
+        if isinstance(v, float) and v != v: f[k] = None  # NaN JSON ma chaldaina
+print("names:", sum(1 for s in P if F[s].get("name")), "/", len(P))
+
 json.dump({"updated": datetime.datetime.now().isoformat(timespec="minutes"), "prices": P, "fund": F, "index": IDX,
            "news": news(list(P))}, open("data.json", "w"))
 print("stocks:", len(P))
