@@ -29,6 +29,7 @@ svg{width:100%;height:auto;display:block}
 <h1>NEPSE Analyzer</h1>
 <div class="mut">Share ko technical + fundamental + news analysis, reason sahit. Forecast ek statistical anuman matra ho.</div>
 <div class="card warn mut" id="mode">DEMO DATA: tala ko stock haru kalpanik (BANK-A jasta) ho, asli NEPSE data haina. Asli data halna tala CSV upload garnus.</div>
+<div class="card mut" id="chk" style="display:none"></div>
 
 <h2>Bazaar adhyayan (online khojera, 9 Nov 2026)</h2>
 <div class="card"><div class="mut">Source: nepalstock.com, Kathmandu Post, OnlineKhabar, ShareSansar, HamroShare, ChartNepali, NepseTrading. Yo asli data ho; tala ko stock table chai abhi demo ho.</div>
@@ -82,8 +83,8 @@ $("#mode").style.display="block";run()}
 function csv(t){const L=t.trim().split(/\r?\n/).map(l=>l.split(",").map(x=>x.trim()));const h=L.shift().map(x=>x.toLowerCase());return L.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
 const rd=f=>new Promise(ok=>{const r=new FileReader();r.onload=()=>ok(r.result);r.readAsText(f)});
 async function load(){const a=$("#fp").files[0],b=$("#ff").files[0];
-if(a){P={};csv(await rd(a)).forEach(x=>{const s=(x.symbol||"").toUpperCase();if(!s||isNaN(+x.close))return;(P[s]=P[s]||[]).push({c:+x.close,v:+x.volume||0,d:x.date})});$("#mode").style.display="none"}
-if(b){F={};csv(await rd(b)).forEach(x=>{F[(x.symbol||"").toUpperCase()]={sector:x.sector||"-",pe:+x.pe,pbv:+x.pbv,roe:+x.roe,div:+x.div}})}
+if(a){P={};csv(await rd(a)).forEach(x=>{const s=NK(x.symbol);if(!s||isNaN(+x.close))return;(P[s]=P[s]||[]).push({c:+x.close,v:+x.volume||0,d:x.date})});$("#mode").style.display="none"}
+if(b){F={};csv(await rd(b)).forEach(x=>{F[NK(x.symbol)]={sector:SEC(x.sector),pe:+x.pe,pbv:+x.pbv,roe:+x.roe,div:+x.div}})}
 run()}
 const avg=a=>a.reduce((x,y)=>x+y,0)/(a.length||1);
 function rsi(c){let g=0,l=0;for(let i=c.length-14;i<c.length;i++){const d=c[i]-c[i-1];d>0?g+=d:l-=d}return l===0?100:100-100/(1+g/l)}
@@ -206,10 +207,73 @@ const col=e1||e2?'g':a.vk>=3?'r':'y';
 return`<div class=sc><div class=sh data-s='${esc(a.s)}'><b>${esc(a.s)}</b><span class='b ${a.vd[1]}'>${esc(a.vd[0])}</span><span class=mut>Tech score ${a.sc}/100 | Confidence: ${a.conf} | Bhaw ${Q(L)}</span></div><div class=sm style='border-left-color:var(--${col})'><b>Ke garne:</b> ${esc(sm)}</div><div class=hz2>${hz(p,15,a)}${hz(r,30,a)}</div></div>`}
 let LIM=40;
 function draw(){const q=($('#q').value||'').trim().toUpperCase(),vf=(document.getElementById('vf')||{}).value||'all';R.forEach(fin);R.sort((x,y)=>rk(x)-rk(y)||y.sc-x.sc);
-let box=document.getElementById('cards');if(!box){box=document.getElementById('tb').closest('.card');box.id='cards';box.className=''}
+let box=document.getElementById('cards');if(!box){const t=document.getElementById('tb').closest('.card');t.style.display='none';box=document.createElement('div');box.id='cards';t.parentNode.insertBefore(box,t)}
 const f=R.filter(a=>a.s.includes(q)&&(vf==='all'||(vf==='buy'?rk(a)<2:vf==='wait'?rk(a)===2:vf==='hold'?rk(a)===3:rk(a)===4)));
 box.innerHTML='<div class=mut>'+f.length+' stock mile. Buy mathi, tyaspachhi Wait, Hold, Avoid.</div>'+f.slice(0,LIM).map(card).join('')+(f.length>LIM?`<button onclick='LIM+=40;draw()'>Aru dekhaunus (${f.length-LIM} baaki)</button>`:'');
 box.querySelectorAll('.sh').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+const _an2=analyze;analyze=function(s){try{if((P[s]||[]).some(x=>!(x.c>0)))return null;return _an2(s)}catch(e){console.log(s,e);return null}};
+const _pl=plan;plan=function(a,H){try{return _pl(a,H)}catch(e){const L=a.c[a.c.length-1];return{en:null,ex:L,stop:L*.92,pu:50,rr:0,net:0,gr:0,why:'analysis error',bul:['Analysis error: '+e.message]}}};
+/* ===== FIX: symbol/bank name milaune + data safai ===== */
+let NM={};
+const NK=s=>String(s==null?'':s).replace(/[\u200b\s]+/g,'').toUpperCase().replace(/[^A-Z0-9&.\-]/g,'');
+const NUM=x=>{const n=parseFloat(String(x==null?'':x).replace(/[,\s]|Rs\.?/gi,''));return isNaN(n)?NaN:n};
+const NU=x=>{const n=NUM(x);return isNaN(n)?undefined:n};
+const DT=x=>{const t=Date.parse(x);return isNaN(t)?null:t};
+const SECALIAS={"commercial banks":"Banking","commercial bank":"Banking","bank":"Banking","banks":"Banking","banking":"Banking","hydro power":"Hydropower","hydropower":"Hydropower"};
+const SEC=s=>{s=String(s==null?'':s).replace(/\s+/g,' ').trim();if(!s)return'-';const k=s.toLowerCase();return SECALIAS[k]||k.replace(/(^|\s)\S/g,c=>c.toUpperCase())};
+function normPrices(raw,rep){const out={};
+const push=(k,r)=>{const s=NK(k);if(!s)return;const c=NUM(r.c!=null?r.c:r.close!=null?r.close:r.ltp!=null?r.ltp:r.price);if(!(c>0)){rep.bad++;return}(out[s]=out[s]||[]).push({c:c,v:NUM(r.v!=null?r.v:r.volume!=null?r.volume:r.vol!=null?r.vol:r.qty)||0,d:r.d||r.date||null})};
+if(Array.isArray(raw))raw.forEach(r=>{if(r&&typeof r==='object')push(r.symbol||r.stock||r.s,r)});
+else Object.keys(raw||{}).forEach(k=>{const a=raw[k];
+if(Array.isArray(a))a.forEach(r=>push(k,r&&typeof r==='object'?r:{c:r}));
+else if(a&&typeof a==='object'){const cl=a.close||a.c||[];(Array.isArray(cl)?cl:[]).forEach((c,i)=>push(k,{c:c,v:(a.volume||a.v||[])[i],d:(a.date||a.dates||a.d||[])[i]}))}});
+Object.keys(out).forEach(s=>{const a=out[s];if(a.length&&a.every(x=>DT(x.d)!=null)){a.sort((x,y)=>DT(x.d)-DT(y.d));const seen={};out[s]=a.filter(x=>{const t=DT(x.d);if(seen[t]){rep.dup++;return false}seen[t]=1;return true})}});
+return out}
+function normFund(raw){const out={},names={};
+const put=(k,x)=>{const s=NK(k);if(!s||!x)return;out[s]={sector:SEC(x.sector||x.sect||x.industry),pe:NU(x.pe),pbv:NU(x.pbv!=null?x.pbv:x.pb),roe:NU(x.roe),div:NU(x.div!=null?x.div:x.dividend)};const nm=x.name||x.company||x.companyName;if(nm)names[s]=String(nm).trim()};
+if(Array.isArray(raw))raw.forEach(x=>x&&put(x.symbol||x.stock||x.s,x));else Object.keys(raw||{}).forEach(k=>put(k,raw[k]));
+return{out:out,names:names}}
+const normNames=r=>{const o={};if(r&&typeof r==='object'&&!Array.isArray(r))Object.keys(r).forEach(k=>{const s=NK(k);if(s&&r[k])o[s]=String(r[k]).trim()});return o};
+function normIdx(raw){if(!Array.isArray(raw))return null;const a=raw.map(r=>({c:NUM(r&&typeof r==='object'?(r.c!=null?r.c:r.close!=null?r.close:r.value):r),d:r&&typeof r==='object'?(r.d||r.date):null})).filter(x=>x.c>0);if(a.length&&a.every(x=>DT(x.d)!=null))a.sort((x,y)=>DT(x.d)-DT(y.d));return a.length?a:null}
+function chk(rep){const ps=Object.keys(P),fs=Object.keys(F),sh=ps.filter(s=>P[s].length<55),nf=ps.filter(s=>!F[s]),np=fs.filter(s=>!P[s]),sec={};R.forEach(a=>{sec[a.sec]=(sec[a.sec]||0)+1});
+const li=(t,a)=>a.length?'<li class="y">'+t+' ('+a.length+'): '+esc(a.slice(0,25).join(', '))+(a.length>25?' ...':'')+'</li>':'';
+$('#chk').innerHTML='<b>Data jaanch</b><ul><li>Price ma '+ps.length+' stock, analysis bhayeko '+R.length+'.</li>'+li('55 din bhanda kam data, analysis bhayena',sh)+li('Fundamental chhaina (P/E, ROE...)',nf)+li('Fundamental ma chha tara price chhaina',np)+(rep.bad?'<li class="y">Galat/khali price '+rep.bad+' row hataiyo.</li>':'')+(rep.dup?'<li class="y">Duplicate date '+rep.dup+' row hataiyo.</li>':'')+'<li>Sector: '+esc(Object.keys(sec).sort().map(k=>k+' '+sec[k]).join(' | '))+'</li></ul>';$('#chk').style.display='block'}
+function fillSec(){const e=$('#sf');if(!e)return;const cur=e.value,s=[...new Set(R.map(a=>a.sec))].sort();e.innerHTML='<option value=all>Sabai sector</option>'+s.map(x=>'<option>'+esc(x)+'</option>').join('');e.value=s.includes(cur)?cur:'all'}
+document.getElementById('vf').insertAdjacentHTML('afterend','<select id=sf onchange="draw()" style="margin:8px 0 0 8px;padding:8px;border-radius:8px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);font:inherit"><option value=all>Sabai sector</option></select><select id=so onchange="draw()" style="margin:8px 0 0 8px;padding:8px;border-radius:8px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);font:inherit"><option value=v>Verdict anusar</option><option value=a>A-Z</option><option value=s>Sector anusar</option></select>');
+const _card=card;card=function(a){return _card(a).replace('<span class=mut>Tech score','<span class=mut>'+esc((NM[a.s]?NM[a.s]+' | ':'')+a.sec)+' | Tech score')};
+function draw(){const q=($('#q').value||'').trim().toUpperCase(),vf=($('#vf')||{}).value||'all',sf=($('#sf')||{}).value||'all',so=($('#so')||{}).value||'v';R.forEach(fin);
+R.sort(so==='a'?(x,y)=>x.s.localeCompare(y.s):so==='s'?(x,y)=>String(x.sec).localeCompare(String(y.sec))||x.s.localeCompare(y.s):(x,y)=>rk(x)-rk(y)||y.sc-x.sc);
+let box=document.getElementById('cards');if(!box){const t=document.getElementById('tb').closest('.card');t.style.display='none';box=document.createElement('div');box.id='cards';t.parentNode.insertBefore(box,t)}
+const f=R.filter(a=>(a.s.includes(q)||(NM[a.s]||'').toUpperCase().includes(q))&&(sf==='all'||a.sec===sf)&&(vf==='all'||(vf==='buy'?rk(a)<2:vf==='wait'?rk(a)===2:vf==='hold'?rk(a)===3:rk(a)===4)));
+box.innerHTML='<div class=mut>'+f.length+' stock mile.</div>'+f.slice(0,LIM).map(a=>card(a)).join('')+(f.length>LIM?`<button onclick='LIM+=40;draw()'>Aru dekhaunus (${f.length-LIM} baaki)</button>`:'');
+box.querySelectorAll('.sh').forEach(e=>e.onclick=()=>show(e.dataset.s))}
+const _run3=run;run=function(){_run3();fillSec();draw()};
+function loadLive(){fetch("data.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw 'nofile';return r.json()}).then(j=>{const rep={bad:0,dup:0},f=normFund(j.fund||j.fundamentals||{});P=normPrices(j.prices||j.price||{},rep);F=f.out;NM=Object.assign({},f.names,normNames(j.names));IDX=normIdx(j.index);$("#nw").value=(j.news||[]).map(n=>NK(n.symbol)+" | "+n.title).join("\n");$("#mode").textContent="Live data, antim update: "+(j.updated||"-");$("#mode").style.display="block";run();chk(rep)}).catch(e=>{$("#mode").textContent=(e==='nofile'||e instanceof SyntaxError)?"DEMO DATA: data.json bhetiyena (repo ko root ma, yehi html ko sath huna parcha). Tala BANK-A, TELE-E kalpanik ho. GitHub Actions ma Update NEPSE data chalaunus.":"Error: "+(e&&e.message||e);$("#mode").style.display="block"})}
+/* ===== 2 mahina ko yojana: entry -> 30 din exit -> feri entry -> mahina 2 naafa/nokshan ===== */
+const nt=g=>{let n=g-.83;if(n>0)n*=.925;return n};
+function mstat(c,H,un){const n=c.length;let base;if(un){base=[];for(let i=49;i<n-H;i++)base.push(Math.log(c[i+H]/c[i]))}else base=dist(c,H).base;if(base.length<10)return null;
+const lr=c.slice(1).map((x,i)=>Math.log(x/c[i])),vr=Math.max(.7,Math.min(1.5,sdv(lr.slice(-20))/(sdv(lr)||1))),md=qn(base,.5),sc=base.map(r=>md+(r-md)*vr);
+return{p10:qn(sc,.1),p50:qn(sc,.5),p90:qn(sc,.9),pu:sc.filter(r=>r>0).length/sc.length*100,n:base.length,vol:sdv(lr)*Math.sqrt(250)*100}}
+function p2(a){const c=a.c,L=c[c.length-1],m1=mstat(c,30,0),m2=mstat(c,30,1);if(!m1||!m2)return null;
+const S=sr(c),ok=a.p30.en!=null,en1=ok?a.p30.en:Math.max(Math.min(L,a.s20),S.sup||0,a.lo20),px=L*Math.exp(m1.p50),ex1=ok?a.p30.ex:(S.res&&S.res*.99<px?S.res*.99:px),
+g=(x,y)=>(x/y-1)*100,n1=nt(g(ex1,en1)),l1=nt(g(L*Math.exp(m1.p10),en1)),h1=nt(g(L*Math.exp(m1.p90),en1)),
+n2=nt((Math.exp(m2.p50)-1)*100),l2=nt((Math.exp(m2.p10)-1)*100),h2=nt((Math.exp(m2.p90)-1)*100),ex2=ex1*Math.exp(m2.p50),
+fp=x=>(x>=0?'+':'')+x.toFixed(1)+'%',ft=a.I.filter(i=>/^(P\/E|P\/B|ROE|Dividend|News|NEPSE index)/.test(i.t)).slice(0,4).map(i=>i.t);
+const rs2=['Pachhillo barsa ko '+m2.n+' ota 30-din window ma '+m2.pu.toFixed(0)+'% ma naafa; kharcha+tax pachhi median '+fp(n2)+', worst (P10) '+fp(l2)+', best (P90) '+fp(h2)+'.',
+'Barsik volatility '+m2.vol.toFixed(0)+'%: ek mahina ma saamanya +-'+(m2.vol*Math.sqrt(30/250)).toFixed(0)+'% ghata-badhi hune gardachha.',
+'30 din pachhi feri kinnu agadi herne: price 20-din average mathi chha ki chhaina ra MACD positive chha ki chhaina. Signal kamjor vae feri kinnu hudaina.']
+.concat(ft,['Sima: ek din +-10% circuit, bonus/dividend book-closure, Q-natija ra NRB policy le 2 mahina pachhi ko anuman badlina sakchha. Yo bhavishyabani haina.']);
+return{ok:ok,en1:en1,ex1:ex1,ex2:ex2,st:a.p30.stop||L*.92,n1:n1,l1:l1,h1:h1,n2:n2,l2:l2,h2:h2,pu1:m1.pu,pu2:m2.pu,rs1:(a.p30.bul||[]).slice(0,3),rs2:rs2,
+v2:n2>1&&m2.pu>=55?['Naafa ko sambhavana','g']:n2<0||m2.pu<45?['Nokshan ko jokhim','r']:['Spasta chhaina','y']}}
+function p2html(a){const r=p2(a),Q=Pz,AM=+($('#am2')||{}).value||100000,fp=x=>(x>=0?'+':'')+x.toFixed(1)+'%',rs=x=>(x>=0?'+':'-')+'Rs '+Math.abs(Math.round(AM*x/100)).toLocaleString('en-IN'),cl=x=>x>=0?'g':'r',kv=(k,v)=>'<div class=kv><span>'+k+'</span><b>'+v+'</b></div>',ul=l=>'<ul>'+l.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';
+if(!r)return'<div class=sm>2 mahina ko yojana: data kam, kam se kam ~1 barsa ko history chahincha.</div>';
+const pl=(n,l,h)=>kv('Anuman naafa/nokshan','<span class='+cl(n)+'>'+fp(n)+' ('+rs(n)+')</span>')+kv('Range (worst dekhi best)',fp(l)+' dekhi '+fp(h)),tot=((1+r.n1/100)*(1+r.n2/100)-1)*100;
+return(r.ok?'':'<div class=sm style="border-left-color:var(--y)"><b>Sabdhan:</b> yo stock ma aaja Entry ko sifaris chhaina ('+esc(a.p30.why||'')+'). Tala "yadi kine" ko anuman matra ho.</div>')
++'<div class=hz2><div class=hz><div><b>Mahina 1: aaja kinne, 30 din ma becne</b></div>'+kv('Entry (kinne)',Q(r.en1))+kv('Exit (30 din ma becne)',Q(r.ex1))+kv('Stop-loss',Q(r.st))+pl(r.n1,r.l1,r.h1)+kv('Naafa hune probability',r.pu1.toFixed(0)+'%')+ul(r.rs1)+'</div>'
++'<div class=hz><div><b>Mahina 2: 30 din pachhi feri kinne</b> <b class='+r.v2[1]+'>'+r.v2[0]+'</b></div>'+kv('Feri Entry (anuman bhaw)',Q(r.ex1))+kv('Exit (60 din ma)',Q(r.ex2))+pl(r.n2,r.l2,r.h2)+kv('Naafa hune probability',r.pu2.toFixed(0)+'%')+ul(r.rs2)+'</div></div>'
++'<div class=sm style="margin-top:10px"><b>60 din (2 mahina) jamma:</b> <span class='+cl(tot)+'>'+fp(tot)+' = '+rs(tot)+'</span> (Rs '+AM.toLocaleString('en-IN')+' lagani ma, kharcha+tax pachhi, median anuman)</div>'}
+document.getElementById('so').insertAdjacentHTML('afterend','<span class=mut style="margin-left:8px">Lagani Rs</span> <input id=am2 type=number value=100000 oninput="draw()" style="width:120px;margin-top:8px;padding:8px;border-radius:8px;background:var(--bg);color:var(--fg);border:1px solid var(--bd);font:inherit">');
+const _card2=card;card=function(a){const s=_card2(a);try{return s.replace('<div class=hz2>',p2html(a)+'<details><summary class=mut>15 din ra 30 din ko purano vistrit</summary><div class=hz2>').replace(/<\/div><\/div>$/,'</div></details></div>')}catch(e){console.log(e);return s}};
 $("#go").onclick=load;$("#dm").onclick=demo;demo();
-fetch("data.json",{cache:"no-store"}).then(r=>r.json()).then(j=>{P=j.prices;F=j.fund||{};IDX=j.index||null;$("#nw").value=(j.news||[]).map(n=>n.symbol+" | "+n.title).join("\n");$("#mode").textContent="Live data, antim update: "+j.updated;$("#mode").style.display="block";run()}).catch(()=>{});
+loadLive();
 </script></main></body></html>
